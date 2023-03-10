@@ -11,10 +11,14 @@ namespace MediaCenter {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow {
         private DispatcherTimer timer;
         private const uint WM_NCRBUTTONDOWN = 0xa4;
         private const uint HTCAPTION = 0x02;
+
+        bool glass = SystemParameters.IsGlassEnabled;
+        bool volume_panel_visible = false;
+
         public MainWindow() {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
@@ -44,7 +48,8 @@ namespace MediaCenter {
 
         private void Timer_Tick(object sender, EventArgs e) {
             MainViewModel vm = (MainViewModel)DataContext;
-            vm.Value = vm.Player.getPosition();
+            if (vm != null)
+                vm.Value = vm.Player.getPosition();
         }
 
         private DependencyObject findParentTreeItem(DependencyObject CurrentControl, Type ParentType) {
@@ -77,7 +82,7 @@ namespace MediaCenter {
         }
 
         private void ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-            
+
         }
 
         private void seeker_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
@@ -129,8 +134,79 @@ namespace MediaCenter {
         }
 
         private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
-                this.DragMove();
+            try {
+                if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+                    this.DragMove();
+            } catch { }
+        }
+
+        private void show_volume_btn_Click(object sender, RoutedEventArgs e) {
+            MainViewModel vm = (MainViewModel)DataContext;
+            if (!volume_panel_visible) {
+                vm.ShowOpacity();
+                volume_panel_visible = true;
+                volume_panel.Visibility = Visibility.Visible;
+            } else {
+                vm.HideOpacity();
+                volume_panel_visible = false;
+                volume_panel.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void DockPanel_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
+            MainViewModel vm = (MainViewModel)DataContext;
+            vm.HideOpacity();
+            volume_panel.Visibility = Visibility.Hidden;
+        }
+
+        private void volume_control_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+            var value = (double)e.NewValue;
+            Properties.Settings.Default.volume = value;
+            Properties.Settings.Default.Save();
+        }
+
+        private void show_volume_btn_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e) {
+            MainViewModel vm = (MainViewModel)DataContext;
+            vm.ShowOpacity();
+            volume_panel.Visibility = Visibility.Visible;
+            volume_panel_visible = true;
+        }
+
+        private void ScrollToSelected() {
+            if (LV.SelectedItem != null && LV.SelectedIndex != -1) {
+                LV.ScrollIntoView(LV.SelectedItem);
+            }
+        }
+
+        private void LV_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            ScrollToSelected();
+        }
+
+
+        private void next_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e) {
+            MainViewModel vm = (MainViewModel)DataContext;
+            vm.NextTrack();
+        }
+
+        private void playpause_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e) {
+            MainViewModel vm = (MainViewModel)DataContext;
+            vm.PlayPause();
+        }
+
+        private void prev_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e) {
+            MainViewModel vm = (MainViewModel)DataContext;
+            vm.PrevTrack();
+        }
+
+        private void stop_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e) {
+            MainViewModel vm = (MainViewModel)DataContext;
+            vm.PlayerStop();
+            vm.Timer.Stop();
+            vm.Time = null;
+        }
+
+        private void clear_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e) {
+
         }
     }
 }

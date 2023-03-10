@@ -7,12 +7,15 @@ namespace MediaCenter.Model {
         private AudioFileReader _reader { get; set; }
         public NAudio.Wave.PlaybackState State { get; set; }
         public Player() {
-            _waveout = new WaveOut();
+            // _waveout = new WaveOut();
+
         }
-        public void Play(string file) {
+        public Task Play(string file) {
             try {
                 if (_waveout == null | _reader == null) {
                     _waveout = new WaveOut();
+                    //var format = _waveout.OutputWaveFormat;
+
                     _waveout.PlaybackStopped += (s, a) => {
                         {
                             _waveout.Dispose();
@@ -33,7 +36,7 @@ namespace MediaCenter.Model {
                 State = PlaybackState.Playing;
             } catch { }
             //catch (Exception e) { MessageBox.Show("Скорее всего этот трек не доступен!", "Media Center", MessageBoxButton.OK, MessageBoxImage.Information); };
-            //return Task.CompletedTask;
+            return Task.CompletedTask;
         }
         public void PlayNext(string file) {
             if (_waveout != null & _reader != null) {
@@ -85,7 +88,8 @@ namespace MediaCenter.Model {
             return _waveout.Volume;
         }
         public void setVolume(float volume) {
-            _waveout.Volume = volume;
+            if (_waveout != null)
+                _waveout.Volume = volume;
         }
         public long getTotalTime() {
             long time = 10;

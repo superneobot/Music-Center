@@ -1,0 +1,89 @@
+﻿<controls:BlurryWindow x:Class="MediaCenter.Views.Settings"
+        xmlns:internals="clr-namespace:BlurryControls.Internals;assembly=BlurryControls"
+        xmlns:controls="clr-namespace:BlurryControls.Controls;assembly=BlurryControls"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MediaCenter.Views"
+        Background="#111"  
+        mc:Ignorable="d" Strength="0.5"
+        IsMenuBarVisible="False" CloseOnIconDoubleClick="True"
+        Title="Настройки" Height="360" Width="400" WindowStartupLocation="CenterScreen" IsResizable="False" Icon="{StaticResource logo}" Loaded="Window_Loaded" Topmost="True" IsManipulationEnabled="True" ShowInTaskbar="False">
+    <DockPanel Background="Transparent" MouseDown="DockPanel_MouseDown">
+        <Grid >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="close" Style="{StaticResource SystemButtons}" Content="X" Click="close_btn_Click" HorizontalAlignment="Right" ToolTip="Закрыть настройки" Visibility="Collapsed"/>
+                <Image Source="{StaticResource logo}" />
+                <TextBlock Grid.Row="0" Text="Настройки приложения" Style="{StaticResource Logo}" HorizontalAlignment="Left"  Margin="5,0,0,0"/>
+                
+            </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="5">
+                <TextBlock Text="Цвет панели и элементов" Style="{StaticResource Time}"/>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_color_default" Click="check_color_default_Click"/>
+                    <TextBlock Text="Как в Windows" Style="{StaticResource Time}" Margin="2,0,0,0"/>
+                    <Border Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Width="40" Margin="10,2,0,2"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_color_variable" Click="check_color_variable_Click"/>
+                    <TextBlock Text="Свой" Style="{StaticResource Time}"  Margin="2,0,0,0"/>
+                    <ComboBox x:Name="color_selector" SelectedIndex="0" Margin="10,0,0,0" Visibility="Collapsed">
+                        <ComboBoxItem Content="Black" />
+                        <ComboBoxItem Content="Red" />
+                        <ComboBoxItem Content="Green" />
+                    </ComboBox>
+                    <Border Background="{Binding SetColor}" Width="40" Margin="10,2,0,2"/>
+                </StackPanel>
+                <TextBlock Text="Стиль окна" Style="{StaticResource Time}"/>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_style_transparent" Click="check_style_transparent_Click"/>
+                    <TextBlock Text="Прозрачное стекло" Style="{StaticResource Time}"  Margin="2,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_style_darkglass" Click="check_style_darkglass_Click"/>
+                    <TextBlock Text="Темное стекло" Style="{StaticResource Time}"  Margin="2,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_style_matglass" Click="check_style_matglass_Click"/>
+                    <TextBlock Text="Матовое стекло" Style="{StaticResource Time}"  Margin="2,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_style_set" Click="check_style_set_Click"/>
+                    <TextBlock Text="Свой оттенок" Style="{StaticResource Time}"  Margin="2,0,0,0"/>
+                    <Border Background="{Binding WindowColor}" Width="40" Margin="10,2,0,2"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Visibility="Collapsed">
+                    <CheckBox Style="{StaticResource Check}" Height="20" x:Name="transparent" Click="transparent_Click" />
+                    <TextBlock Text="Прозрачность" Style="{StaticResource Time}" Margin="2,0,0,0" />
+                </StackPanel>
+                <TextBlock Text="Путь для сохранения загруженных файлов" Style="{StaticResource Time}"/>
+                <TextBlock Style="{StaticResource Time}" Text="{Binding SavePath}" FontSize="14" Foreground="Silver"/>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_savepath_default" Click="check_savepath_default_Click"/>
+                        <TextBlock Text="По умолчанию" Style="{StaticResource Time}"  Margin="2,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_savepath_mymusic" Click="check_savepath_mymusic_Click"/>
+                        <TextBlock Text="В папке ''Моя музыка''" Style="{StaticResource Time}"  Margin="2,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Style="{StaticResource Check}" Height="20" x:Name="check_savepath_set" Click="check_savepath_set_Click"/>
+                        <TextBlock Text="Выбрать свою" Style="{StaticResource Time}"  Margin="2,0,0,0"/>
+                    </StackPanel>
+                    <Button Content="Открыть" Style="{StaticResource MenuButton}" Width="120" Height="24" x:Name="open_path" HorizontalAlignment="Left" Click="Button_Click" Margin="2" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Button x:Name="close_btn" Style="{StaticResource MenuButton}" Content="OK" Width="120" Height="30" HorizontalAlignment="Right" Margin="2" Click="close_btn_Click"/>
+                </StackPanel>
+
+
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</controls:BlurryWindow>

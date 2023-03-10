@@ -15,23 +15,26 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\kalky\OneDrive\Рабочий стол\Music Center\</PublishUrl>
+    <PublishUrl>ftp://localhost/musiccenter/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Background</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
+    <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <UpdateUrl>http://localhost/musiccenter/</UpdateUrl>
     <SupportUrl>http://vk.com/kammerer_ea</SupportUrl>
     <ProductName>Music Center</ProductName>
     <PublisherName>Головин Сергей</PublisherName>
     <SuiteName>Music Center</SuiteName>
+    <MinimumRequiredVersion>1.0.0.1</MinimumRequiredVersion>
+    <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>8</ApplicationRevision>
+    <ApplicationRevision>32</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -62,7 +65,7 @@
     </StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ApplicationIcon>music-square-2-svgrepo-com.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>EA9A2FFF5EB30ECFA2AB655B09E785238A95F144</ManifestCertificateThumbprint>
@@ -86,6 +89,12 @@
   <ItemGroup>
     <Reference Include="AngleSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
       <HintPath>..\packages\AngleSharp.1.0.1\lib\net472\AngleSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="BlurryControls">
+      <HintPath>..\..\..\..\OneDrive\Рабочий стол\BlurryControls-master\BlurryControls\bin\Debug\BlurryControls.dll</HintPath>
+    </Reference>
+    <Reference Include="BlurWindow, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BlurWindow.4.0.0\lib\net45\BlurWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Registry, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Registry.5.0.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
@@ -120,6 +129,7 @@
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
@@ -140,6 +150,7 @@
     <Reference Include="System.Text.Encoding.CodePages, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encoding.CodePages.7.0.0\lib\net462\System.Text.Encoding.CodePages.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -161,6 +172,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Compact.xaml.cs">
+      <DependentUpon>Compact.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Collection.cs" />
+    <Compile Include="Model\DataTemplateSelector.cs" />
+    <Compile Include="Model\KnownFolders.cs" />
+    <Compile Include="Model\SelectedItemSelector.cs" />
+    <Compile Include="Model\StyleSelector.cs" />
+    <Compile Include="Views\enums\Enum.cs" />
+    <Compile Include="Views\MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -175,7 +198,22 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Compact.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -210,94 +248,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="prev.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="play.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="next.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="repeate.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="shuffle.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="pause.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="logo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="music.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="mp3-file.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="play_listviewitem.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="pause_listviewitem.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="sound_on.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="like.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="not_like.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="play_music.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="update.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="add.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="exit.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="load.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="none.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="check.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="uncheck.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="close.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="close_over.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="maxi.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="maxi_over.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="mini.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="mini_over.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="mp3_file.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="favicon.ico" />
+    <Resource Include="Resources\play.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
@@ -310,6 +261,21 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\large.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\music.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\music_empty.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="music-square-2-svgrepo-com.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\pause.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

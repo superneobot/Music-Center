@@ -1,10 +1,20 @@
 ﻿using MediaCenter.ViewModel;
 using System;
-using System.Windows.Media.Imaging;
-
+public enum SourceType {
+    Music,
+    Collection
+}
 namespace MediaCenter.Model {
     [Serializable]
-    public class MusicFile : ViewModelBase {
+    public class DataSource : ViewModelBase {
+        private SourceType _type;
+        public SourceType Type {
+            get { return _type; }
+            set {
+                _type = value;
+                OnPropertyChanged(nameof(Type));
+            }
+        }
         private int _id;
         public int Id {
             get { return _id; }
@@ -112,16 +122,25 @@ namespace MediaCenter.Model {
                 OnPropertyChanged(nameof(Liked));
             }
         }
-        private BitmapSource likedState;
+        private string likedState;
         /// <summary>
         /// Тест 
         /// </summary>
-        public BitmapSource LikedState {
+        public string LikedState {
             get {
+                if (_liked) {
+                    likedState = @"/Resources/like.png";
+                } else {
+                    likedState = @"/Resources/not_like.png";
+                }
                 return likedState;
             }
             set {
-                likedState = value;
+                if (_liked) {
+                    likedState = @"/Resources/like.png";
+                } else {
+                    likedState = @"/Resources/not_like.png";
+                }
                 OnPropertyChanged("LikedState");
             }
         }
@@ -177,7 +196,23 @@ namespace MediaCenter.Model {
                 OnPropertyChanged(nameof(Download));
             }
         }
-        public MusicFile() { }
+        private bool _localFile;
+        public bool LocalFile {
+            get {
+                return _localFile;
+            }
+            set {
+                _localFile = value;
+                OnPropertyChanged(nameof(LocalFile));
+            }
+        }
+        public DataSource(string title, string poster, string url) {
+            Title = title;
+            Poster = poster;
+            FilePath = url;
+            Type = SourceType.Collection;
+        }
+        public DataSource() { }
         /// <summary>
         /// Добавление файла из сети
         /// </summary>
@@ -189,33 +224,35 @@ namespace MediaCenter.Model {
         /// <param name="source">Путь к файлу (внешний)</param>
         /// <param name="url">Путь к странице с файлом</param>
         /// <param name="location">Расположение файла</param>
-        public MusicFile(string title, string artist, string album, string poster, string duration, string source, string url, Location location) {
+        public DataSource(string title, string artist, string album, string poster, string duration, string source, Location location) {
             _title = title;
             _artist = artist;
             _album = album;
             _poster = poster;
             _duration = duration;
-            _source = source;
-            _url = url;
+            _filePath = source;
+            // _url = url;
             _location = location;
             _id++;
+            Type = SourceType.Music;
+            LocalFile = false;
         }
-        /// <summary>
-        /// Добавление файла локально (тест)
-        /// </summary>
-        /// <param name="title"></param>
-        /// <param name="artist"></param>
-        /// <param name="filepath"></param>
-        public MusicFile(string title, string artist, string filepath) {
-            _title = title;
-            _artist = artist;
-            _filePath = filepath;
-        }
+        ///// <summary>
+        ///// Добавление файла локально (тест)
+        ///// </summary>
+        ///// <param name="title"></param>
+        ///// <param name="artist"></param>
+        ///// <param name="filepath"></param>
+        //public MusicFile(string title, string artist, string filepath) {
+        //    _title = title;
+        //    _artist = artist;
+        //    _filePath = filepath;
+        //}
         /// <summary>
         /// Добавление файла локально и чтение информации из его тега
         /// </summary>
         /// <param name="file">Путь к файлу</param>
-        public MusicFile(string file) {
+        public DataSource(string file) {
             getTitle(file);
             getArtist(file);
             getAlbum(file);
@@ -223,7 +260,9 @@ namespace MediaCenter.Model {
             getPoster(file);
             getFilePath(file);
             getState(file);
+            LocalFile = true;
             Location = Location.Local;
+            Type = SourceType.Music;
             _id++;
         }
         /// <summary>
@@ -286,8 +325,8 @@ namespace MediaCenter.Model {
         /// </summary>
         /// <param name="path">Путь к файлу</param>
         private void getPoster(string path) {
-            _poster = $@"/mp3_file.png";
-            //_poster = "/play.png";
+            _poster = $@"/Resources/music.png";
+            //_poster = "";
         }
         /// <summary>
         /// Проверка на лайк
@@ -295,22 +334,24 @@ namespace MediaCenter.Model {
         /// <param name="file">Путь к файлу</param>
         private void getState(string file) {
             if (Liked) {
-                LikedState = new BitmapImage(new Uri(AppContext.BaseDirectory + @"/Images/like.png", UriKind.Absolute));
+                LikedState = @"/Resources/like.png";
             } else {
-                LikedState = null;
+                LikedState = @"/Resources/not_like.png";
             }
         }
 
-        //public override bool Equals(object obj) {
-        //    var item = obj as MusicFile;
-        //    if (item == null)
-        //        return false;
-        //    return this.FilePath == item.FilePath;
-        //}
+        public override bool Equals(object obj) {
+            var item = obj as DataSource;
+            if (item == null)
+                return false;
+            return this.Title == item.Title | this.Artist == item.Artist;
+        }
 
-        //public override int GetHashCode() {
-        //    return FilePath.GetHashCode();
-        //}
+
+
+        public override int GetHashCode() {
+            return this.Title.GetHashCode();
+        }
 
         //public override bool Equals(object obj) {
         //    var item = obj as MusicFile;

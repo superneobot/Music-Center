@@ -1,47 +1,19 @@
-﻿using MediaCenter.ViewModel;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace MediaCenter {
     /// <summary>
-    /// Логика взаимодействия для App.xaml
+    /// Логика взаимодействия для MainPage.xaml
     /// </summary>
-    public partial class App : Application {
-
-        protected override void OnStartup(StartupEventArgs e) {
-            base.OnStartup(e);
-            if (!InstanceCheck()) {
-                Process.GetCurrentProcess().Kill();
-            } else {
-                MainWindow window = new MainWindow();
-                var model = new MainViewModel();
-                model.WindowColor = MediaCenter.Properties.Settings.Default.windowstyle;
-                window.DataContext = model;
-                window.Show();
-                //
-                var path = AppContext.BaseDirectory + @"Downloaded";
-                if (Directory.Exists(path)) {
-                    return;
-                } else {
-                    Directory.CreateDirectory(path);
-                }
-            }
+    public partial class MainPage : Page {
+        public MainPage() {
+            InitializeComponent();
         }
 
-        static Mutex InstanceCheckMutex;
-        static bool InstanceCheck() {
-            bool isNew;
-            var mutex = new Mutex(true, "Music Center", out isNew);
-            if (isNew)
-                InstanceCheckMutex = mutex;
-            else
-                mutex.Dispose(); // отпустить mutex сразу
-            return isNew;
+        private void LV_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+
         }
 
         private DependencyObject findParentTreeItem(DependencyObject CurrentControl, Type ParentType) {
