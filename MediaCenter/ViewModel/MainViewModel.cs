@@ -1,7 +1,7 @@
 ﻿using AngleSharp;
 using MediaCenter.Model;
+using MediaCenter.SpectrumAnalizer.Models;
 using MediaCenter.Views.enums;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
@@ -85,6 +85,39 @@ namespace MediaCenter.ViewModel {
                 OnPropertyChanged(nameof(ParsedCollection));
             }
         }
+        private ObservableCollection<DataSource> _radioCollection;
+        public ObservableCollection<DataSource> RadioCollection {
+            get {
+                return _radioCollection;
+            }
+            set {
+                _radioCollection = value;
+                OnPropertyChanged(nameof(RadioCollection));
+            }
+        }
+
+        public ObservableCollection<Collection> UsersFavorite;
+        private ObservableCollection<DataSource> _usersChart;
+        public ObservableCollection<DataSource> UsersChart {
+            get {
+                return _usersChart;
+            }
+            set {
+                _usersChart = value;
+                OnPropertyChanged(nameof(UsersChart));
+            }
+        }
+        private ObservableCollection<DataSource> _usersChartPlayList;
+        public ObservableCollection<DataSource> UsersChartPlayList {
+            get {
+                return _usersChartPlayList;
+            }
+            set {
+                _usersChartPlayList = value;
+                OnPropertyChanged(nameof(UsersChartPlayList));
+            }
+        }
+
         private string _parsedCollectionTitle;
         public string ParsedCollectionTitle {
             get {
@@ -93,6 +126,16 @@ namespace MediaCenter.ViewModel {
             set {
                 _parsedCollectionTitle = value;
                 OnPropertyChanged(nameof(ParsedCollectionTitle));
+            }
+        }
+        private string _usersChartTitle;
+        public string UsersChartTitle {
+            get {
+                return _usersChartTitle;
+            }
+            set {
+                _usersChartTitle = value;
+                OnPropertyChanged(nameof(UsersChartTitle));
             }
         }
         private ItemsControl _content;
@@ -107,6 +150,7 @@ namespace MediaCenter.ViewModel {
         }
 
         #endregion
+
         #region program_param
         private PanelColor _panelColor;
         public PanelColor PanelColor {
@@ -196,9 +240,9 @@ namespace MediaCenter.ViewModel {
                     _savePath = Properties.Settings.Default.savepath;
                     if (_savePath == AppContext.BaseDirectory + @"Downloaded\")
                         SavingPath = SavingPath.Default;
-                    if (_savePath == KnownFolders.GetPath(KnownFolder.Music))
+                    if (_savePath == KnownFolders.GetPath(KnownFolder.Music) + @"\")
                         SavingPath = SavingPath.MyMusic;
-                    if (_savePath != KnownFolders.GetPath(KnownFolder.Music) & _savePath != AppContext.BaseDirectory + @"Downloaded\")
+                    if (_savePath != KnownFolders.GetPath(KnownFolder.Music) + @"\" & _savePath != AppContext.BaseDirectory + @"Downloaded\")
                         SavingPath = SavingPath.Set;
                 }
                 return _savePath;
@@ -289,8 +333,8 @@ namespace MediaCenter.ViewModel {
                 OnPropertyChanged(nameof(ReturnVisible));
             }
         }
-        private Orientation _lvOrientation;
-        public Orientation LVOrientation {
+        private System.Windows.Controls.Orientation _lvOrientation;
+        public System.Windows.Controls.Orientation LVOrientation {
             get {
                 return _lvOrientation;
             }
@@ -311,8 +355,8 @@ namespace MediaCenter.ViewModel {
         }
         private double _strenght;
         public double Strenght {
-            get { 
-                if(Properties.Settings.Default.strength == 0.0 & WindowColorStyle != WindowColorStyle.Transparent) {
+            get {
+                if (Properties.Settings.Default.strength == 0.0 & WindowColorStyle != WindowColorStyle.Transparent) {
                     _strenght = 0.5;
                 } else {
                     _strenght = Properties.Settings.Default.strength;
@@ -329,10 +373,11 @@ namespace MediaCenter.ViewModel {
         private bool _transparent;
         public bool Transparent {
             get {
-                if(Properties.Settings.Default.transparent == false) {
-                   _transparent = false;
+                if (Properties.Settings.Default.transparent == false) {
+                    _transparent = false;
                     Strenght = 1.0;
-                } if(Properties.Settings.Default.transparent == true) {
+                }
+                if (Properties.Settings.Default.transparent == true) {
                     _transparent = true;
                     Strenght = Properties.Settings.Default.strength;
                 }
@@ -342,7 +387,7 @@ namespace MediaCenter.ViewModel {
                 _transparent = value;
                 Properties.Settings.Default.transparent = _transparent;
                 Properties.Settings.Default.Save();
-                if(_transparent == true) {
+                if (_transparent == true) {
                     Strenght = 0.5;
                 } else {
                     Strenght = 1.0;
@@ -350,7 +395,16 @@ namespace MediaCenter.ViewModel {
                 OnPropertyChanged(nameof(Transparent));
             }
         }
-        private CenterState CenterState { get; set; } = CenterState.Playlist;
+        private CenterState _centerState { get; set; } = CenterState.Playlist;
+        public CenterState CenterState {
+            get {
+                return _centerState;
+            }
+            set {
+                _centerState = value;
+                OnPropertyChanged(nameof(CenterState));
+            }
+        }
         public DispatcherTimer Timer;
         private int _allpages;
         private object _url = "https://ru.hitmotop.com/search?q=";
@@ -365,15 +419,17 @@ namespace MediaCenter.ViewModel {
             }
         }
         #endregion
+
         #region app_main_param
         //
-        private bool IsPlay = false;
+        public bool IsPlay = false;
         public Player Player;
         //
         private string _searchText;
         public string SearchText {
-            get { 
-                return _searchText; }
+            get {
+                return _searchText;
+            }
             set {
                 _searchText = value;
                 OnPropertyChanged(nameof(SearchText));
@@ -430,6 +486,7 @@ namespace MediaCenter.ViewModel {
             }
         }
         #endregion
+
         #region media_center_settings
         private string _version;
         public string Version {
@@ -567,9 +624,6 @@ namespace MediaCenter.ViewModel {
         private long _volume;
         public long Volume {
             get {
-                if (_volume == 1) {
-                    _volume = 100;
-                }
                 return _volume;
             }
             set {
@@ -619,6 +673,7 @@ namespace MediaCenter.ViewModel {
             }
         }
         #endregion
+
         #region commands
         public ICommand OpenPlayList {
             get {
@@ -631,8 +686,9 @@ namespace MediaCenter.ViewModel {
                     OpenPathVisible = Visibility.Collapsed;
                     BackVisible = Visibility.Collapsed;
                     ReturnVisible = Visibility.Collapsed;
-                    LVOrientation = Orientation.Vertical;
+                    LVOrientation = System.Windows.Controls.Orientation.Vertical;
                     Check(MusicFiles, PlayingMusic);
+                    CheckFavorites(MusicFiles, FavoriteList);
                 });
             }
         }
@@ -648,8 +704,9 @@ namespace MediaCenter.ViewModel {
                     OpenPathVisible = Visibility.Visible;
                     BackVisible = Visibility.Collapsed;
                     ReturnVisible = Visibility.Collapsed;
-                    LVOrientation = Orientation.Vertical;
+                    LVOrientation = System.Windows.Controls.Orientation.Vertical;
                     Check(DownloadedFiles, PlayingMusic);
+                    CheckFavorites(DownloadedFiles, FavoriteList);
                 });
             }
         }
@@ -664,7 +721,7 @@ namespace MediaCenter.ViewModel {
                     OpenPathVisible = Visibility.Collapsed;
                     BackVisible = Visibility.Collapsed;
                     ReturnVisible = Visibility.Collapsed;
-                    LVOrientation = Orientation.Vertical;
+                    LVOrientation = System.Windows.Controls.Orientation.Vertical;
                     Check(SearchList, PlayingMusic);
                 });
             }
@@ -680,46 +737,122 @@ namespace MediaCenter.ViewModel {
                     OpenPathVisible = Visibility.Collapsed;
                     BackVisible = Visibility.Collapsed;
                     ReturnVisible = Visibility.Collapsed;
-                    LVOrientation = Orientation.Vertical;
+                    LVOrientation = System.Windows.Controls.Orientation.Vertical;
                     Check(FavoriteList, PlayingMusic);
+                    //SaveFavoriteList();
+                    UploadDatabase();
                 });
             }
         }
         public ICommand OpenRadioPage {
             get {
                 return new RelayCommand<ObservableCollection<DataSource>>((e) => {
-                    CurrentPlayList = RadioList;
+                    Content = new ItemsControl();
+
+                    Content.ItemsSource = RadioCollection;
                     State = "Радио";
+                    Check(RadioCollection, PlayingMusic);
                     CenterState = CenterState.Radio;
-                    ClearVisible = Visibility.Hidden;
-                    OpenPathVisible = Visibility.Hidden;
+                    ClearVisible = Visibility.Collapsed;
+                    OpenPathVisible = Visibility.Collapsed;
+                    BackVisible = Visibility.Collapsed;
+                    ReturnVisible = Visibility.Collapsed;
+                    LVOrientation = System.Windows.Controls.Orientation.Horizontal;
                 });
             }
         }
         public ICommand OpenCollections {
             get {
-                return new RelayCommand<ObservableCollection<Collection>>((e) => {
+                return new RelayCommand((e) => {
                     if (ParsedCollection.Count > 0) {
                         Content = new ItemsControl();
                         Content.ItemsSource = Collections;
-                        State = "Подборки треков";
+                        State = "Топ чарты";
                         CenterState = CenterState.Collections;
-                        ClearVisible = Visibility.Hidden;
-                        OpenPathVisible = Visibility.Hidden;
+                        ClearVisible = Visibility.Collapsed;
+                        OpenPathVisible = Visibility.Collapsed;
                         BackVisible = Visibility.Collapsed;
                         ReturnVisible = Visibility.Visible;
-                        LVOrientation = Orientation.Horizontal;
+                        LVOrientation = System.Windows.Controls.Orientation.Horizontal;
                     } else {
                         Content = new ItemsControl();
                         GetCollections();
                         Content.ItemsSource = Collections;
-                        State = "Подборки треков";
+                        State = "Топ чарты";
                         CenterState = CenterState.Collections;
                         ClearVisible = Visibility.Collapsed;
                         OpenPathVisible = Visibility.Collapsed;
                         BackVisible = Visibility.Collapsed;
                         ReturnVisible = Visibility.Collapsed;
-                        LVOrientation = Orientation.Horizontal;
+                        LVOrientation = System.Windows.Controls.Orientation.Horizontal;
+                    }
+                });
+            }
+        }
+        public ICommand OpenWave {
+            get {
+                return new RelayCommand((e) => {
+                    Content = new ItemsControl();
+                    GetUserCharts();
+                    Content.ItemsSource = UsersChart;
+                    State = "Свои чарты";
+                    CenterState = CenterState.UsersChart;
+                });
+            }
+        }
+        public ICommand BackToCollections {
+            get {
+                return new RelayCommand(e => {
+                    if (CenterState == CenterState.Collections) {
+                        Content = new ItemsControl();
+                        Content.ItemsSource = Collections;
+                        State = "Топ чарты";
+                        CenterState = CenterState.Collections;
+                        ClearVisible = Visibility.Collapsed;
+                        OpenPathVisible = Visibility.Collapsed;
+                        BackVisible = Visibility.Collapsed;
+                        ReturnVisible = Visibility.Visible;
+                        LVOrientation = System.Windows.Controls.Orientation.Horizontal;
+                    }
+                    if (CenterState == CenterState.UsersChart) {
+                        Content = new ItemsControl();
+                        Content.ItemsSource = UsersChart;
+                        State = "Свои чарты";
+                        CenterState = CenterState.UsersChart;
+                        ClearVisible = Visibility.Collapsed;
+                        OpenPathVisible = Visibility.Collapsed;
+                        BackVisible = Visibility.Collapsed;
+                        ReturnVisible = Visibility.Visible;
+
+                    }
+                });
+            }
+        }
+        public ICommand Return {
+            get {
+                return new RelayCommand(e => {
+                    if (CenterState == CenterState.Collections) {
+                        Content = new ItemsControl();
+                        Content.ItemsSource = ParsedCollection;
+                        State = ParsedCollectionTitle;
+                        CenterState = CenterState.Collections;
+                        ClearVisible = Visibility.Collapsed;
+                        OpenPathVisible = Visibility.Collapsed;
+                        BackVisible = Visibility.Visible;
+                        ReturnVisible = Visibility.Collapsed;
+                        LVOrientation = System.Windows.Controls.Orientation.Vertical;
+                        Check(ParsedCollection, PlayingMusic);
+                    }
+                    if (CenterState == CenterState.UsersChart) {
+                        Content = new ItemsControl();
+                        Content.ItemsSource = UsersChartPlayList;
+                        State = UsersChartTitle;
+                        CenterState = CenterState.UsersChart;
+                        OpenPathVisible = Visibility.Collapsed;
+                        BackVisible = Visibility.Visible;
+                        ReturnVisible = Visibility.Collapsed;
+                        LVOrientation = System.Windows.Controls.Orientation.Vertical;
+                        Check(UsersChartPlayList, PlayingMusic);
                     }
                 });
             }
@@ -728,7 +861,7 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand<DataSource>((e) => {
                     var settings = new Views.Settings();
-                    var vm = Application.Current.Windows[0].DataContext;
+                    var vm = System.Windows.Application.Current.Windows[0].DataContext;
                     settings.DataContext = vm;
                     settings.ShowDialog();
                 });
@@ -750,7 +883,7 @@ namespace MediaCenter.ViewModel {
                     if (CenterState == CenterState.Playlist)
                         MusicFiles.Clear();
                     if (CenterState == CenterState.Downloaded) {
-                        var result = MessageBox.Show("Это действие удалит загруженные файлы с диска.\nВыполнить?", "Music Center", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+                        var result = System.Windows.MessageBox.Show("Это действие удалит загруженные файлы с диска.\nВыполнить?", "Music Center", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
                         if (result == MessageBoxResult.OK) {
                             if (Directory.Exists(SavePath)) {
                                 DirectoryInfo dir = new DirectoryInfo(SavePath);
@@ -758,7 +891,7 @@ namespace MediaCenter.ViewModel {
                                     file.Delete();
                                 }
                                 DownloadedFiles.Clear();
-                                MessageBox.Show("Готово!", "Music Center", MessageBoxButton.OK, MessageBoxImage.Information);
+                                System.Windows.MessageBox.Show("Готово!", "Music Center", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         } else {
                             return;
@@ -775,52 +908,82 @@ namespace MediaCenter.ViewModel {
                 return new RelayCommand(item => {
                     if (CenterState == CenterState.Playlist) {
                         CurrentPlayList = MusicFiles;
+                        _history_index = SelectedMusicIndex;
                         Play(SelectedMusic, MusicFiles);
-                        
+
                     }
                     if (CenterState == CenterState.Downloaded) {
-                        Play(SelectedMusic, DownloadedFiles);
                         CurrentPlayList = DownloadedFiles;
+                        _history_index = SelectedMusicIndex;
+                        Play(SelectedMusic, DownloadedFiles);
                     }
                     if (CenterState == CenterState.Search) {
                         CurrentPlayList = SearchList;
+                        _history_index = SelectedMusicIndex;
                         Play(SelectedMusic, SearchList);
-                        
+
                     }
                     if (CenterState == CenterState.Favorite) {
                         CurrentPlayList = FavoriteList;
+                        _history_index = SelectedMusicIndex;
                         Play(SelectedMusic, FavoriteList);
-                        
+
                     }
                     if (CenterState == CenterState.Collections) {
-                        Play(SelectedMusic, ParsedCollection);
                         CurrentPlayList = ParsedCollection;
+                        _history_index = SelectedMusicIndex;
+                        Play(SelectedMusic, ParsedCollection);
+                    }
+                    if (CenterState == CenterState.Radio) {
+                        CurrentPlayList = RadioList;
+                        _history_index = SelectedMusicIndex;
+                        Play(SelectedMusic, RadioCollection);
+                    }
+                    if (CenterState == CenterState.UsersChart) {
+                        CurrentPlayList = UsersChartPlayList;
+                        _history_index = SelectedMusicIndex;
+                        Play(SelectedMusic, UsersChartPlayList);
                     }
                 });
             }
         }
-        public RelayCommand PlayFileFromList {
+        public ICommand PlayFileFromList {
             get {
                 return new RelayCommand(item => {
                     if (CenterState == CenterState.Playlist) {
                         Play(SelectedMusic, MusicFiles);
+                        _history_index = SelectedMusicIndex;
                         CurrentPlayList = MusicFiles;
                     }
                     if (CenterState == CenterState.Downloaded) {
                         Play(SelectedMusic, DownloadedFiles);
+                        _history_index = SelectedMusicIndex;
                         CurrentPlayList = DownloadedFiles;
                     }
                     if (CenterState == CenterState.Search) {
                         Play(SelectedMusic, SearchList);
+                        _history_index = SelectedMusicIndex;
                         CurrentPlayList = SearchList;
                     }
                     if (CenterState == CenterState.Favorite) {
                         Play(SelectedMusic, FavoriteList);
+                        _history_index = SelectedMusicIndex;
                         CurrentPlayList = FavoriteList;
                     }
                     if (CenterState == CenterState.Collections) {
                         Play(SelectedMusic, ParsedCollection);
+                        _history_index = SelectedMusicIndex;
                         CurrentPlayList = ParsedCollection;
+                    }
+                    if (CenterState == CenterState.Radio) {
+                        CurrentPlayList = RadioList;
+                        _history_index = SelectedMusicIndex;
+                        Play(SelectedMusic, RadioCollection);
+                    }
+                    if (CenterState == CenterState.UsersChart) {
+                        CurrentPlayList = UsersChartPlayList;
+                        _history_index = SelectedMusicIndex;
+                        Play(SelectedMusic, UsersChartPlayList);
                     }
                 });
             }
@@ -851,13 +1014,13 @@ namespace MediaCenter.ViewModel {
         public ICommand PlayPrev {
             get {
                 return new RelayCommand((e) => {
-                    if (_history_index != 0)
-                        if (SelectedMusicIndex == CurrentPlayList.Count - 1)
-                            SelectedMusicIndex--;
-                        else
-                            SelectedMusicIndex = CurrentPlayList.Count - 1;
+                    // if (_history_index != 0)
+                    if (SelectedMusicIndex != 0)
+                        SelectedMusicIndex--;
                     else
-                        SelectedMusicIndex = _history_index;
+                        SelectedMusicIndex = CurrentPlayList.Count - 1;
+                    //else
+                    //     SelectedMusicIndex = CurrentPlayList.Count - 1; ;
                     var file = CurrentPlayList[SelectedMusicIndex];
                     Play(file, CurrentPlayList);
                 });
@@ -874,7 +1037,7 @@ namespace MediaCenter.ViewModel {
         public ICommand SearchClick {
             get {
                 return new RelayCommand(obj => {
-                    var box = obj as TextBox;
+                    var box = obj as System.Windows.Controls.TextBox;
                     box.Clear();
                 });
             }
@@ -883,6 +1046,14 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand<DataSource>(item => {
                     TrackIsFavorite(SelectedMusic);
+                    SaveFavoriteList();
+                });
+            }
+        }
+        public ICommand AddToFavoriteListPlayingMusic {
+            get {
+                return new RelayCommand(e => {
+                    TrackIsFavorite(PlayingMusic);
                     SaveFavoriteList();
                 });
             }
@@ -944,10 +1115,10 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand(e => {
                     var compact = new Compact();
-                    var vm = Application.Current.Windows[0].DataContext;
+                    var vm = System.Windows.Application.Current.Windows[0].DataContext;
                     compact.DataContext = vm;
                     compact.Show();
-                    var window = Application.Current.MainWindow;
+                    var window = System.Windows.Application.Current.MainWindow;
                     window.Hide();
                 });
             }
@@ -970,63 +1141,50 @@ namespace MediaCenter.ViewModel {
                     CenterState = CenterState.Collections;
                     ClearVisible = Visibility.Collapsed;
                     OpenPathVisible = Visibility.Collapsed;
-                    LVOrientation = Orientation.Vertical;
+                    LVOrientation = System.Windows.Controls.Orientation.Vertical;
                     Check(ParsedCollection, PlayingMusic);
+                    //CheckFavorites(ParsedCollection, FavoriteList);
                 });
             }
         }
-        public ICommand BackToCollections {
+        public ICommand GetWave {
             get {
                 return new RelayCommand(e => {
-                    //ParsedCollection.Clear();
+
+                });
+            }
+        }
+        public ICommand PlayRadio {
+            get {
+                return new RelayCommand(e => {
+                    Play(SelectedMusic, RadioCollection);
+                    // SelectedMusic.IsPlay= true;
+                    CurrentPlayList = RadioCollection;
+                    Check(RadioCollection, PlayingMusic);
+                });
+            }
+        }
+        public ICommand OpenUsersChart {
+            get {
+                return new RelayCommand(e => {
+                    UsersChartTitle = SelectedMusic.Title;
+                    GetUsersChartPlaylist(SelectedMusic.FilePath);
                     Content = new ItemsControl();
-                    //GetCollections();
-                    Content.ItemsSource = Collections;
-                    State = "Подборки треков";
-                    CenterState = CenterState.Collections;
+                    Content.ItemsSource = UsersChartPlayList;
+                    State = UsersChartTitle;
+                    CenterState = CenterState.UsersChart;
                     ClearVisible = Visibility.Collapsed;
                     OpenPathVisible = Visibility.Collapsed;
-                    BackVisible = Visibility.Collapsed;
-                    ReturnVisible = Visibility.Visible;
-                    LVOrientation = Orientation.Horizontal;
+
+
+                    CheckFavorites(UsersChartPlayList, FavoriteList);
+                    Check(UsersChartPlayList, PlayingMusic);
                 });
             }
         }
-        public ICommand Return {
-            get {
-                return new RelayCommand(e => {
-                    Content = new ItemsControl();
-                    Content.ItemsSource = ParsedCollection;
-                    State = ParsedCollectionTitle;
-                    CenterState = CenterState.Collections;
-                    ClearVisible = Visibility.Collapsed;
-                    OpenPathVisible = Visibility.Collapsed;
-                    BackVisible = Visibility.Visible;
-                    ReturnVisible = Visibility.Collapsed;
-                    LVOrientation = Orientation.Vertical;
-                    Check(ParsedCollection, PlayingMusic);
-                });
-            }
-        }
-        public ICommand GetArtist {
-            get {
-                return new RelayCommand<string>(Text => {
-                    var a = Text;
-                    MessageBox.Show($"{Text}");
-                });
-            }
-        }
-        public ICommand ShrinkMenu {
-            get {
-                return new RelayCommand(e => {
-                    if (SideMenuWidth)
-                        SideMenuWidth = false;
-                    else
-                        SideMenuWidth = true;
-                });
-            }
-        }
+
         #endregion
+
         #region app_voids
         private void DownloadSong(DataSource file) {
             file.Download = true;
@@ -1050,36 +1208,31 @@ namespace MediaCenter.ViewModel {
         void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e) {
             download_file.Download = false;
         }
-        private void SaveFavoriteList() {
+        public void SaveFavoriteList() {
+            var username = System.Environment.UserName;
             var file = JsonConvert.SerializeObject(FavoriteList, Formatting.Indented);
-            File.WriteAllText(AppContext.BaseDirectory + "favorite.json", file, System.Text.Encoding.UTF8);
-            UploadFiles("ftp://localhost/database/", AppContext.BaseDirectory + "favorite.json");
+            System.IO.File.WriteAllText(Environment.CurrentDirectory + @"/favorite.data", file, System.Text.Encoding.UTF8);
+            UploadFiles($"ftp://77.222.40.224//Database/{username}/", Environment.CurrentDirectory + @"/favorite.data");
         }
-
         public void UploadFiles(string address, string file) {
+            var username = System.Environment.UserName;
             try {
                 using (WebClient webClient = new WebClient()) {
-                    webClient.Credentials = new NetworkCredential("ftp", "");
-                    var path = address + "favorite.json";
-                    webClient.UploadFile(path, WebRequestMethods.Ftp.UploadFile, @file);
+                    var path = address + Path.GetFileName(file);
+                    webClient.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+                    webClient.UploadFileAsync(new Uri(path), WebRequestMethods.Ftp.UploadFile, file);
                 }
-            } catch (Exception e) {
-                File.WriteAllText(AppContext.BaseDirectory + "favorite.json", file);
-            }
+            } catch { }
         }
-
         private void LoadFavoriteList() {
+            var username = System.Environment.UserName;
             try {
                 using (WebClient client = new WebClient()) {
-                    var data = client.DownloadString("http://localhost/database/favorite.json");
+                    client.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+                    var data = client.DownloadString(new Uri($"ftp://77.222.40.224//Database/{username}/favorite.data"));
                     FavoriteList = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
                 }
-            } catch {
-                if (File.Exists(AppContext.BaseDirectory + "favorite.json")) {
-                    var file = File.ReadAllText(AppContext.BaseDirectory + "favorite.json");
-                    FavoriteList = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(file);
-                }
-            }
+            } catch { }
         }
         private void TrackIsFavorite(DataSource file) {
             if (file.Liked == false) {
@@ -1091,7 +1244,7 @@ namespace MediaCenter.ViewModel {
             }
         }
         private void AddingFile() {
-            OpenFileDialog ofd = new OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
             ofd.Filter = "Все музыкальные форматы (*.mp3, *.flac)|*.mp3;*.flac|MP3 музыка (*.mp3)|*.mp3|FLAC музыка (*.flac)|*.flac";
             ofd.Multiselect = true;
             ofd.RestoreDirectory = true;
@@ -1102,10 +1255,16 @@ namespace MediaCenter.ViewModel {
                     MusicFiles.Add(new DataSource(item));
                 }
             }
-            CurrentPlayList = MusicFiles;
-            State = "Плейлист";
+            Content = new ItemsControl();
+            Content.ItemsSource = MusicFiles;
+            //CurrentPlayList = MusicFiles;
             CenterState = CenterState.Playlist;
             ClearVisible = Visibility.Visible;
+            OpenPathVisible = Visibility.Collapsed;
+            BackVisible = Visibility.Collapsed;
+            ReturnVisible = Visibility.Collapsed;
+            LVOrientation = System.Windows.Controls.Orientation.Vertical;
+            Check(MusicFiles, PlayingMusic);
         }
         private void Update(ObservableCollection<DataSource> source) {
             //source.Clear();
@@ -1151,20 +1310,19 @@ namespace MediaCenter.ViewModel {
             Play(file, CurrentPlayList);
         }
         public async void PlayPause() {
-            if(Player.State == NAudio.Wave.PlaybackState.Playing) {
+            if (Player.State == NAudio.Wave.PlaybackState.Playing) {
                 await Player.Pause();
                 ThumbPlayText = "Играть";
                 PlayText = "Играть";
-                PlayBtn = "/Resources/play.png";
+                //PlayBtn = "/Resources/play.png";
                 IsPlay = false;
                 PlayingMusic.IsPlay = false;
                 PlayingMusic.IsPaused = true;
-            }
-            else if(Player.State == NAudio.Wave.PlaybackState.Paused) {
+            } else if (Player.State == NAudio.Wave.PlaybackState.Paused) {
                 await Player.Resume();
                 ThumbPlayText = "Пауза";
                 PlayText = "Пауза";
-                PlayBtn = "/Resources/pause.png";
+                //PlayBtn = "/Resources/pause.png";
                 IsPlay = true;
                 PlayingMusic.IsPlay = true;
                 PlayingMusic.IsPaused = false;
@@ -1174,12 +1332,11 @@ namespace MediaCenter.ViewModel {
             Player.Stop();
             ThumbPlayText = "Играть";
             PlayText = "Играть";
-            PlayBtn = "/Resources/play.png";
+            //PlayBtn = "/Resources/play.png";
             IsPlay = false;
             PlayingMusic.IsPlay = false;
             PlayingMusic.IsPaused = false;
         }
-
         private async void PlayClick(DataSource file, ObservableCollection<DataSource> list) {
             if (file == null) return;
             await Player.Stop(); IsPlay = false;
@@ -1220,22 +1377,50 @@ namespace MediaCenter.ViewModel {
             PlayingFile = $"{PlayingMusic.Title} - {PlayingMusic.Artist}";
         }
         private void Check(ObservableCollection<DataSource> source, DataSource target) {
-            foreach (var item in source) {
+            foreach (var file in source) {
                 if (Player.State == NAudio.Wave.PlaybackState.Playing) {
-                    if (item != target) {
-                        item.IsPlay = false;
-                        item.IsPaused = false;
+                    if (file.FilePath == target.FilePath) {
+                        file.IsPlay = true;
+                        file.IsPaused = false;
+                    } else {
+                        file.IsPlay = false;
+                        file.IsPaused = false;
                     }
                 }
                 if (Player.State == NAudio.Wave.PlaybackState.Paused) {
-                    if (item != target) {
-                        item.IsPaused = false;
+                    if (file.FilePath == target.FilePath) {
+                        file.IsPaused = true;
+                        file.IsPlay = false;
                     }
                 }
                 if (Player.State == NAudio.Wave.PlaybackState.Stopped) {
-                    item.IsPlay = false;
-                    item.IsPaused = false;
+                    file.IsPlay = false;
+                    file.IsPaused = false;
                 }
+            }
+            //foreach (var file in source.Where(item => item != target)) {
+            //    //    if (Player.State == NAudio.Wave.PlaybackState.Playing) {
+            //    //        //if (item != target) {
+            //    //        file.IsPlay = false;
+            //    //        file.IsPaused = false;
+            //    //        // }
+            //    //    }
+            //    //    if (Player.State == NAudio.Wave.PlaybackState.Paused) {
+            //    //        // if (item != target) {
+            //    //        file.IsPaused = true;
+            //    //        file.IsPlay = false;
+            //    //        //  }
+            //    //    }
+            //    if (Player.State == NAudio.Wave.PlaybackState.Stopped) {
+            //        file.IsPlay = false;
+            //        file.IsPaused = false;
+            //    }
+            //}
+
+        }
+        private void CheckFavorites(ObservableCollection<DataSource> source, ObservableCollection<DataSource> target) {
+            foreach (var file in source.Where(item => target.Contains(item))) {
+                file.Liked = true;
             }
         }
         public async void ShowOpacity() {
@@ -1282,32 +1467,9 @@ namespace MediaCenter.ViewModel {
                     Maximum = Player.getTotalTime();
                     IsPlay = true;
                     Timer.Start();
-                    //} else if (CenterState == CenterState.Search) {
-                    //    await Player.Play(file.URL);
-                    //    PlayBtn = "/Resources/pause.png";
-                    //    PlayText = "Пауза";
-                    //    ThumbPlayText = "Пауза";
-                    //    Duration = Player?.getTotalTimeString();
-                    //    Time = Player.getPositionString();
-                    //    Maximum = Player.getTotalTime();
-                    //    IsPlay = true;
-                    //} else if (CenterState == CenterState.Favorite) {
-                    //    if (file.URL == null)
-                    //        await Player.Play(file.FilePath);
-                    //    else
-                    //        await Player.Play(file.URL);
-                    //    PlayBtn = "/Resources/pause.png";
-                    //    PlayText = "Пауза";
-                    //    ThumbPlayText = "Пауза";
-                    //    Duration = Player?.getTotalTimeString();
-                    //    Time = Player.getPositionString();
-                    //    Maximum = Player.getTotalTime();
-                    //    IsPlay = true;
-                    //}
                     PlayingMusic = file;
                     PlayingMusic.IsPaused = false;
                     PlayingMusic.IsPlay = true;
-                    //Check(list, PlayingMusic);
                 }
             } else if (Player.State == NAudio.Wave.PlaybackState.Paused & file == PlayingMusic) {
                 await Player.Resume();
@@ -1331,28 +1493,6 @@ namespace MediaCenter.ViewModel {
                 Maximum = Player.getTotalTime();
                 IsPlay = true;
                 Timer.Start();
-                //} else if (CenterState == CenterState.Search) {
-                //    await Player.Play(file.URL);
-                //    PlayBtn = "/Resources/pause.png";
-                //    PlayText = "Пауза";
-                //    ThumbPlayText = "Пауза";
-                //    Duration = Player?.getTotalTimeString();
-                //    Time = Player.getPositionString();
-                //    Maximum = Player.getTotalTime();
-                //    IsPlay = true;
-                //} else if (CenterState == CenterState.Favorite) {
-                //    if (file.URL == null)
-                //        await Player.Play(file.FilePath);
-                //    else
-                //        await Player.Play(file.URL);
-                //    PlayBtn = "/Resources/pause.png";
-                //    PlayText = "Пауза";
-                //    ThumbPlayText = "Пауза";
-                //    Duration = Player?.getTotalTimeString();
-                //    Time = Player.getPositionString();
-                //    Maximum = Player.getTotalTime();
-                //    IsPlay = true;
-                //}
                 PlayingMusic = file;
                 PlayingMusic.IsPaused = false;
                 PlayingMusic.IsPlay = true;
@@ -1377,7 +1517,7 @@ namespace MediaCenter.ViewModel {
             OpenPathVisible = Visibility.Collapsed;
             BackVisible = Visibility.Collapsed;
             ReturnVisible = Visibility.Collapsed;
-            LVOrientation = Orientation.Vertical;
+            LVOrientation = System.Windows.Controls.Orientation.Vertical;
             Check(SearchList, PlayingMusic);
         }
         private async Task FindMusic(int page, string search_text) {
@@ -1406,7 +1546,7 @@ namespace MediaCenter.ViewModel {
                         SearchList.Add(file);
                     }
                 } else {
-                    MessageBox.Show("Ничего не найдено");
+                    System.Windows.MessageBox.Show("Ничего не найдено");
                 }
             } catch {
             }
@@ -1456,8 +1596,10 @@ namespace MediaCenter.ViewModel {
 
             }
             BackVisible = Visibility.Collapsed;
-            if(ParsedCollection.Count >0)
-            ReturnVisible = Visibility.Visible;
+            if (ParsedCollection.Count > 0)
+                ReturnVisible = Visibility.Visible;
+
+
         }
         private async void ParseCollection(string url) {
             ParsedCollection.Clear();
@@ -1485,20 +1627,130 @@ namespace MediaCenter.ViewModel {
                         ParsedCollection.Add(file);
                     }
                 } else {
-                    MessageBox.Show("Ничего не найдено");
+                    System.Windows.MessageBox.Show("Ничего не найдено");
                 }
             } catch {
             }
             BackVisible = Visibility.Visible;
             ReturnVisible = Visibility.Collapsed;
+
+            CheckFavorites(ParsedCollection, FavoriteList);
+            Check(ParsedCollection, PlayingMusic);
+        }
+        private async void GetRadioList() {
+            RadioCollection.Clear();
+            try {
+                var config = Configuration.Default.WithDefaultLoader();
+                var context = BrowsingContext.New(config);
+                var document = await context.OpenAsync("https://ru.hitmotop.com/radio");
+                //
+                var albumlist = document.QuerySelector("ul[class='album-list muslist']");
+                var albumitem = albumlist.QuerySelectorAll("li[class='album-item media-elem mustoggler']");
+                foreach (var item in albumitem) {
+                    var url = "https://ru.hitmotop.com";
+                    var link = item.QuerySelector("div").GetAttribute("data-url");
+                    var title = item.QuerySelector("span[class='album-title']").TextContent;
+                    var poster = item.QuerySelector("span").GetAttribute("style").Replace("background-image: url('", "").Replace("')", "");
+
+                    RadioCollection.Add(new DataSource(title, url + poster, link, SourceType.Radio));
+                }
+            } catch {
+
+            }
+            var data = JsonConvert.SerializeObject(RadioCollection, Formatting.Indented);
+            System.IO.File.WriteAllText(AppContext.BaseDirectory + "radio.json", data);
+        }
+        private void UploadDatabase() {
+            var username = System.Environment.UserName;
+            var image = Avatar.GetUserTile(username);
+            image.Save("avatar.png");
+            var file = Path.Combine(Environment.CurrentDirectory, "favorite.data");
+            var avatar = Path.Combine(Environment.CurrentDirectory, "avatar.png");
+            UploadFiles($"ftp://77.222.40.224//Database/{username}/", file);
+            UploadFiles($"ftp://77.222.40.224/Database/{username}/", avatar);
+        }
+        private Task DownloadDatabase() {
+            NetworkCredential credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+            string url = "ftp://77.222.40.224/Database/";
+
+            Loader.DownloadFile(Path.Combine(Environment.CurrentDirectory, "Database"), "/Database/", "kalkyneogm_admin", "Sneo2352816botS");
+
+            return Task.CompletedTask;
+        }
+        private void GetUserCharts() {
+            UsersChart.Clear();
+            var ext_avatar = ".png";
+            var ext_list = ".data";
+            DirectoryInfo dir = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, @"Database"));
+            FileInfo[] files = dir.GetFiles("*", SearchOption.AllDirectories);
+            var f = dir.GetDirectories();
+            foreach (var file in f) {
+                DirectoryInfo folder = file;
+                FileInfo[] avatars = folder.GetFiles("*" + ext_avatar, SearchOption.AllDirectories);
+                FileInfo[] fav_lists = folder.GetFiles("*" + ext_list, SearchOption.AllDirectories);
+                var ava = "";
+                var path = "";
+                ObservableCollection<DataSource> temp = new ObservableCollection<DataSource>();
+                foreach (var item in avatars) {
+                    ava = item.FullName;
+                }
+                foreach (var item in fav_lists) {
+                    path = item.FullName;
+                    var data = System.IO.File.ReadAllText(path);
+                    temp = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
+                }
+                //UsersFavorite.Add(new Collection(folder.Name, ava, temp));
+                UsersChart.Add(new DataSource(folder.Name, ava, path, SourceType.Users));
+
+            }
+
+        }
+        private void GetUsersChartPlaylist(string path) {
+            var data = System.IO.File.ReadAllText(path);
+            UsersChartPlayList = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
+            foreach (var item in UsersChartPlayList) {
+                item.Liked = false;
+            }
+            BackVisible = Visibility.Visible;
+            ReturnVisible = Visibility.Collapsed;
+
+        }
+        public bool DirectoryExists(string directory) {
+            bool directoryExists;
+
+            var request = (FtpWebRequest)WebRequest.Create(directory);
+            request.Method = WebRequestMethods.Ftp.ListDirectory;
+            request.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+
+            try {
+                using (request.GetResponse()) {
+                    directoryExists = true;
+                }
+            } catch (WebException) {
+                directoryExists = false;
+            }
+
+            return directoryExists;
+        }
+        private void CreateFtpPath() {
+            var username = Environment.UserName;
+            if (DirectoryExists($"ftp://77.222.40.224//Database/{username}/")) {
+
+            } else {
+                FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create($"ftp://77.222.40.224//Database/{username}/");
+                request.Method = WebRequestMethods.Ftp.MakeDirectory;
+                request.UseBinary = true;
+                request.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+                response.Close();
+            }
         }
         #endregion
-        /*---------------------------------------------------------------------*/
-        public MainViewModel() {
-            //
 
-            //
-            Player = new Player();
+        public MainViewModel() {
+            //YandexApi.Init();
+            CreateFtpPath();
+            Player = new Player((long)Properties.Settings.Default.volume);
             CurrentPlayList = new ObservableCollection<DataSource>();
             MusicFiles = new ObservableCollection<DataSource>();
             DownloadedFiles = new ObservableCollection<DataSource>();
@@ -1507,30 +1759,41 @@ namespace MediaCenter.ViewModel {
             RadioList = new ObservableCollection<DataSource>();
             Collections = new ObservableCollection<DataSource>();
             ParsedCollection = new ObservableCollection<DataSource>();
+            RadioCollection = new ObservableCollection<DataSource>();
+            UsersFavorite = new ObservableCollection<Collection>();
+            UsersChart = new ObservableCollection<DataSource>();
             Update(DownloadedFiles);
             LoadFavoriteList();
+            if (System.IO.File.Exists(AppContext.BaseDirectory + "radio.json")) {
+                var data = System.IO.File.ReadAllText(AppContext.BaseDirectory + "radio.json");
+                RadioCollection = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
+            } else {
+                GetRadioList();
+            }
+            DownloadDatabase();
             //
             Opacity = 1.0;
             CurrentPlayList = MusicFiles;
+            //
             State = "Плейлист";
-            //SearchText = "Поиск трека или исполнителя";
+            ThumbPlayText = "Играть";
+            PlayText = "Играть";
+            //
             ClearVisible = Visibility.Visible;
             OpenPathVisible = Visibility.Collapsed;
             BackVisible = Visibility.Collapsed;
             ReturnVisible = Visibility.Collapsed;
-            LVOrientation = Orientation.Vertical;
-            Volume = (long)(Properties.Settings.Default.volume);
-            ThumbPlayText = "Играть";
-            PlayText = "Играть";
-            SideMenuWidth = false;
+            LVOrientation = System.Windows.Controls.Orientation.Vertical;
+            //Volume = (long)(Properties.Settings.Default.volume);
+            //
             if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
                 Version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
             //
             Timer = new DispatcherTimer(DispatcherPriority.Background);
             Timer.Interval = new TimeSpan(0, 0, 0, 1, 0);
             Timer.Tick += delegate {
-                if(Player.State == NAudio.Wave.PlaybackState.Playing)
-                Time = Player.getPositionString();
+                if (Player.State == NAudio.Wave.PlaybackState.Playing)
+                    Time = Player.getPositionString();
                 //Value = Player.getPosition();
                 PageTitle = $"{Player.State}";
                 if (Player.State == NAudio.Wave.PlaybackState.Stopped & IsPlay) {
@@ -1544,7 +1807,6 @@ namespace MediaCenter.ViewModel {
                     }
                 }
             };
-            
         }
     }
 }

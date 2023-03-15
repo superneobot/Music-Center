@@ -7,24 +7,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:vm="clr-namespace:MediaCenter.ViewModel"
+        xmlns:wrap="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+        xmlns:speccontrols="clr-namespace:MediaCenter.SpectrumAnalizer.Controls"
         xmlns:local="clr-namespace:MediaCenter" 
         xmlns:databinding="clr-namespace:MediaCenter.Model" 
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         x:Class="MediaCenter.MainWindow"
         mc:Ignorable="d"
         Title="Music Center"
-        Height="800"
-        Width="1200"
+        Height="815"
+        Width="1400"
         Topmost="{Binding IsTopMost}"
         Icon="{StaticResource logo}"
         WindowStartupLocation="CenterScreen"
-        MinWidth="1200"
-        MinHeight="400"
         IsMenuBarVisible="False" 
         BorderBrush="#222"
         BorderThickness="0"
-        IsResizable="True" 
+        IsResizable="False" 
         Strength="{Binding Strenght}">
     <controls:BlurryWindow.CommandBindings>
         <CommandBinding x:Name="next" Command="{x:Static MediaCommands.NextTrack}" Executed="next_Executed"/>
@@ -32,6 +33,9 @@
         <CommandBinding x:Name="prev" Command="{x:Static MediaCommands.PreviousTrack}" Executed="prev_Executed" />
         <CommandBinding x:Name="stop" Command="{x:Static MediaCommands.Stop}" Executed="stop_Executed" />              
     </controls:BlurryWindow.CommandBindings>
+    <controls:BlurryWindow.InputBindings>
+        <KeyBinding Key="Space" Command="{Binding PlayFile}" />
+    </controls:BlurryWindow.InputBindings>
     <controls:BlurryWindow.Resources>
         <vm:MainViewModel x:Key="main_vm"/>
         <ContextMenu x:Key="app_menu">
@@ -42,6 +46,14 @@
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
+        <system:Double x:Key="ActualRaising">25.5</system:Double>
+        <system:Double x:Key="ActualDropping">25.5</system:Double>
+        <system:Double x:Key="ShadowDropping">0.0511</system:Double>
+        <system:Double x:Key="ShadowRaising">25.5</system:Double>
+        <system:Double x:Key="ShadowOpacity">0.3</system:Double>
+        <system:Boolean x:Key="PitchColor">True</system:Boolean>
+        <SolidColorBrush x:Key="ForegroundPitched" Color="DodgerBlue"/>
+        <SolidColorBrush x:Key="Foreground" Color="#444"/>
     </controls:BlurryWindow.Resources>
     <controls:BlurryWindow.Background>
         <SolidColorBrush Color="{Binding WindowColor}" Opacity="1"/>
@@ -49,22 +61,22 @@
     <controls:BlurryWindow.TaskbarItemInfo>
         <TaskbarItemInfo>
             <TaskbarItemInfo.ThumbButtonInfos>
-                <ThumbButtonInfo x:Name="thumb_prev" Description="Предыдущий" ImageSource="{StaticResource play_skip_back}" Command="{Binding PlayPrev}"/>
-                <ThumbButtonInfo x:Name="thumb_play" Description="{Binding ThumbPlayText}" ImageSource="{Binding PlayBtn}" Command="{Binding PlayFile}"/>
-                <ThumbButtonInfo x:Name="thumb_next" Description="Следующий" ImageSource="{StaticResource play_skip_next}" Command="{Binding PlayNext}"/>
+                <ThumbButtonInfo x:Name="thumb_prev" Description="Предыдущий" ImageSource="{StaticResource prev_thumb}" Command="{Binding PlayPrev}"/>
+                <ThumbButtonInfo x:Name="thumb_play" Description="{Binding ThumbPlayText}" ImageSource="{StaticResource playpause_thumb}" Command="{Binding PlayFile}"/>
+                <ThumbButtonInfo x:Name="thumb_next" Description="Следующий" ImageSource="{StaticResource next_thumb}" Command="{Binding PlayNext}"/>
             </TaskbarItemInfo.ThumbButtonInfos>
         </TaskbarItemInfo>
     </controls:BlurryWindow.TaskbarItemInfo>
-    <DockPanel MouseDown="Border_MouseDown" Background="Transparent" Opacity="1">
+    <Border x:Name="main_border" MouseDown="Border_MouseDown" Background="Transparent" Opacity="1" BorderThickness="1" BorderBrush="#333">
         <Grid x:Name="main_grid" MouseDown="Border_MouseDown">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1"/>
                 <RowDefinition Height="32" />
-                <RowDefinition />
-                <RowDefinition Height="24" />
-                <RowDefinition Height="44" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="32" />                  
+                <RowDefinition Height="50" />
             </Grid.RowDefinitions>
-            <DockPanel Grid.Row="1" MouseDown="Border_MouseDown" Background="{Binding SetColor}" Visibility="Visible" Opacity="1">
+            <DockPanel Grid.Row="0" x:Name="top_panel" MouseDown="Border_MouseDown" Background="{Binding SetColor}" Visibility="Visible" Opacity="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="32"/>
@@ -74,7 +86,7 @@
                     </Grid.ColumnDefinitions>
                     <Image Grid.Column="0" Width="32" Source="{StaticResource logo}" Opacity="0.9" Visibility="Visible"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal">                          
-                        <TextBlock Text="Music Center" Style="{StaticResource Time}" Width="100" HorizontalAlignment="Left">
+                        <TextBlock Text="Music Center" Style="{StaticResource Time}" Margin="2,0,0,0" Width="100" HorizontalAlignment="Left">
                         <TextBlock.Effect>
                             <DropShadowEffect BlurRadius="10" ShadowDepth="3" Direction="270" />
                         </TextBlock.Effect>
@@ -84,166 +96,258 @@
                     <Button Grid.Column="3" Command="{Binding Exit}" Content="X" Style="{StaticResource SystemButtons}" Width="24" Height="24" Visibility="Visible"/>
                 </Grid>
             </DockPanel>
-            <Grid Grid.Row="2" x:Name="center_panel">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" x:Name="side_menu"/>
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <DockPanel Grid.Column="0" Width="200" x:Name="main_menu_panel">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="48"/>
-                            <RowDefinition Height="48"/>
-                            <RowDefinition Height="48"/>
-                            <RowDefinition Height="48"/>
-                            <RowDefinition Height="48"/>
-                            <RowDefinition Height="48"/>
-                            <RowDefinition />
-                            <RowDefinition Height="48"/>
-                            <RowDefinition Height="48"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal">
-                            <CheckBox x:Name="side_menu_btn" Style="{StaticResource side_menu_button}" Width="36" Margin="2">
-                                <CheckBox.Triggers>
-                                    <EventTrigger RoutedEvent="CheckBox.Checked" SourceName="side_menu_btn" >  
-                                        
-                                        <BeginStoryboard Storyboard="{StaticResource collapse}" />
-                                    </EventTrigger>
-                                    <EventTrigger RoutedEvent="CheckBox.Unchecked" SourceName="side_menu_btn" >
-                                        <BeginStoryboard Storyboard="{StaticResource expand}" />
-                                    </EventTrigger>
-                                </CheckBox.Triggers>
-                            </CheckBox>
-                            
-                        <TextBlock x:Name="logo" Text="Music Center" Style="{StaticResource Logo}" FontSize="24">
-                            <TextBlock.Effect>
-                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" Color="Black"/>
-                            </TextBlock.Effect>
-                        </TextBlock>
-                        </StackPanel>
-                        <Button Command="{Binding OpenPlayList}" Width="190" Grid.Row="1" Style="{StaticResource MenuButton}"  ToolTip="Открыть плейлист">
-                            <Border Width="190">
-                                <Grid Width="190">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="48"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Width="Auto" >
-                                        <TextBlock Text="Плейлист" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="40,0,0,0" Opacity="1" />
-                                    </Border>
-                                    <Border Grid.Column="1" Margin="0,0,0,0" Width="42" Height="42">
-                                        <Button Width="40" Height="40" Command="{Binding AddFile}" Style="{StaticResource AddMenuButton}" ToolTip="Добавление музыки">
-                                            <Image Source="{StaticResource add_music}" Width="22" />
-                                        </Button>
-                                    </Border>
-                                </Grid>
-                            </Border>
-                        </Button>
-                        <Button Command="{Binding OpenDownloadedList}" Grid.Row="2" Width="190" Style="{StaticResource MenuButton}" ToolTip="Открыть загруженную музыку">
-                            <Border Width="190">
-                                <Grid >
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*" />
-                                        <ColumnDefinition Width="48" />
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Width="Auto" >
-                                        <TextBlock Text="Загруженное" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="40,0,0,0" />
-                                    </Border>
-                                    <Border Grid.Column="1" Margin="0,0,0,0" Width="42" Height="42">
-                                        <Button Width="40" Height="40" Command="{Binding UpdateList}" Style="{StaticResource AddMenuButton}" ToolTip="Обновить список загруженных треков">
-                                            <Image Source="{StaticResource reload}" Width="22"/>
-                                        </Button>
-                                    </Border>
-                                </Grid>
-                            </Border>
-                        </Button>
-                        <Button Command="{Binding OpenSearchList}" Width="190" Grid.Row="3" Style="{StaticResource MenuButton}" Content="Поиск треков"  ToolTip="Поиск треков в сети"/>
-                        <Button Command="{Binding OpenFavoriteList}" Width="190" Grid.Row="4" Style="{StaticResource MenuButton}" Content="Мне нравится"  ToolTip="Открыть список понравившихся"/>
-                        <Button Command="{Binding OpenCollections}" Width="190" Grid.Row="5" Style="{StaticResource MenuButton}" Content="Подборки треков" ToolTip="Открыть подборки" Visibility="Visible"/>
-                        <!--<Button Command="{Binding OpenRadioPage}" Width="190" Grid.Row="5" Style="{StaticResource MenuButton}" Content="Online Радио" IsEnabled="False" ToolTip="Открыть радиостанции" Visibility="Hidden"/>-->
-                        <Button Command="{Binding OpenSettingsPage}" Width="190" Grid.Row="9" Style="{StaticResource MenuButton}" Content="Настройки"  ToolTip="Показать настройки приложения" Visibility="Visible"/>
-                        <TextBlock Style="{StaticResource Time}" Text="{Binding Version}" Grid.Row="8" HorizontalAlignment="Center" Foreground="Gray"/>
-                        <!--<TextBlock Text="{Binding LoadProgress}" Grid.Row="9" x:Name="progress" Style="{StaticResource Time}" />-->
-                    </Grid>
-                </DockPanel>
+            <DockPanel Grid.Row="1" x:Name="center_panel" Height="700" Background="{Binding WindowColorStyle}">
+                <Grid x:Name="center_grid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" x:Name="side_menu"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <DockPanel Grid.Column="0" Width="200" x:Name="main_menu_panel">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="48"/>
+                                <RowDefinition Height="48"/>
+                                <RowDefinition Height="48"/>
+                                <RowDefinition Height="48"/>
+                                <RowDefinition Height="48"/>
+                                <RowDefinition Height="48"/>
+                                <RowDefinition Height="48"/>
+                                <RowDefinition />
+                                <RowDefinition Height="48"/>
+                                <RowDefinition Height="48"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <CheckBox x:Name="side_menu_btn" Style="{StaticResource side_menu_button}" Width="36" Margin="2">
+                                    <CheckBox.Triggers>
+                                        <EventTrigger RoutedEvent="CheckBox.Checked" SourceName="side_menu_btn" >
 
-                <Grid Grid.Column="1" x:Name="play_list_grid">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="48"/>
-                        <RowDefinition Height="42"/>
-                        <RowDefinition Height="1*" />
-                    </Grid.RowDefinitions>
-                    <DockPanel Grid.Row="0">
-                        <TextBox x:Name="search_box" 
+                                            <BeginStoryboard Storyboard="{StaticResource collapse}" />
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="CheckBox.Unchecked" SourceName="side_menu_btn" >
+                                            <BeginStoryboard Storyboard="{StaticResource expand}" />
+                                        </EventTrigger>
+                                    </CheckBox.Triggers>
+                                </CheckBox>
+
+                                <TextBlock x:Name="logo" Text="Music Center" Style="{StaticResource Logo}" FontSize="24">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" Color="Black"/>
+                                    </TextBlock.Effect>
+                                </TextBlock>
+                            </StackPanel>
+                            <Button Command="{Binding OpenPlayList}" Grid.Row="1" Width="190" Style="{StaticResource MenuButton}"  ToolTip="Открыть плейлист">
+                                <Border Width="190">
+                                    <Grid Width="190">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="48"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Width="Auto" >
+                                            <TextBlock Text="Плейлист" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="40,0,0,0" Opacity="1" />
+                                        </Border>
+                                        <Border Grid.Column="1" Margin="0,0,0,0" Width="42" Height="42">
+                                            <Button Width="40" Height="40" Command="{Binding AddFile}" Style="{StaticResource AddMenuButton}" ToolTip="Добавление музыки">
+                                                <Image Source="{StaticResource add_music}" Width="22" />
+                                            </Button>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Button>
+                            <Button Command="{Binding OpenDownloadedList}" Grid.Row="2" Width="190" Style="{StaticResource MenuButton}" Content="Загруженное" ToolTip="Открыть загруженную музыку">
+                                <!--<Border Width="190">
+                                    <Grid >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="48" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Width="Auto" >
+                                            <TextBlock Text="Загруженное" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="40,0,0,0" />
+                                        </Border>
+                                        --><!--<Border Grid.Column="1" Margin="0,0,0,0" Width="42" Height="42">
+                                            <Button Width="40" Height="40" Command="{Binding UpdateList}" Style="{StaticResource AddMenuButton}" ToolTip="Обновить список загруженных треков">
+                                                <Image Source="{StaticResource reload}" Width="22"/>
+                                            </Button>
+                                        </Border>--><!--
+                                    </Grid>
+                                </Border>-->
+                            </Button>
+                            <Button Command="{Binding OpenSearchList}" Width="190" Grid.Row="3" Style="{StaticResource MenuButton}" Content="Поиск треков"  ToolTip="Поиск треков в сети"/>
+                            <Button Command="{Binding OpenFavoriteList}" Width="190" Grid.Row="4" Style="{StaticResource MenuButton}" Content="Мне нравится"  ToolTip="Открыть список понравившихся"/>
+                            <Button Command="{Binding OpenCollections}" Width="190" Grid.Row="5" Style="{StaticResource MenuButton}" Content="Топ чарты" ToolTip="Открыть топ чарты и подборки"/>
+                            <Button Command="{Binding OpenWave}" Width="190" Grid.Row="6" Style="{StaticResource MenuButton}" Content="Свои чарты" ToolTip="Слушать подборки пользователей" />
+                            <Button Command="{Binding OpenRadioPage}" Width="190" Grid.Row="7" Style="{StaticResource MenuButton}" Content="Online Радио" ToolTip="Открыть радиостанции"/>
+                            
+                            <StackPanel Grid.Row="9" x:Name="version_panel" Background="Transparent" Orientation="Vertical" Width="200" Height="48">
+                                <TextBlock Style="{StaticResource Time}" Text="Версия приложения" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Style="{StaticResource Time}" Text="{Binding Version}" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            
+                            <Button Command="{Binding OpenSettingsPage}" Width="190" Grid.Row="10" Style="{StaticResource MenuButton}" Content="Настройки"  ToolTip="Показать настройки приложения" Visibility="Visible"/>
+                            
+                        </Grid>
+                    </DockPanel>
+
+                    <Grid Grid.Column="1" x:Name="play_list_grid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="48"/>
+                            <RowDefinition Height="42"/>
+                            <RowDefinition Height="1*" />
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0">
+                            <TextBox x:Name="search_box" 
                      Style="{StaticResource SearchBox}"
                      ToolTip="Поиск треков в сети">
-                            <TextBox.InputBindings>
-                                <KeyBinding Key="Enter" Command="{Binding Search}" CommandParameter="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
-                                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ClearBox}" />
-                            </TextBox.InputBindings>                           
-                        </TextBox>
-                    </DockPanel>
-                    <Border Grid.Row="1" Padding="4" Background="Transparent">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="1*" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Style="{StaticResource Caption}" Width="Auto" Text="{Binding State}" Margin="0,-7,0,0">
-                                <TextBlock.Effect>
-                                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" />
-                                </TextBlock.Effect>
-                            </TextBlock>
-                            <DockPanel Grid.Column="1" Width="Auto">
-                                <Border Margin="15,0,0,0" BorderBrush="WhiteSmoke" BorderThickness="0" Height="32" CornerRadius="4" Width="Auto" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock Foreground="GhostWhite" Margin="5" HorizontalAlignment="Center"
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding Search}" CommandParameter="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+                                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ClearBox}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </DockPanel>
+                        <Border Grid.Row="1" Padding="4" Background="Transparent">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Caption}" Width="Auto" Text="{Binding State}" Margin="0,-7,0,0">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" />
+                                    </TextBlock.Effect>
+                                </TextBlock>
+                                <DockPanel Grid.Column="1" Width="Auto">
+                                    <Border Margin="15,0,0,0" BorderBrush="WhiteSmoke" BorderThickness="0" Height="32" CornerRadius="4" Width="Auto" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock Foreground="GhostWhite" Margin="5" HorizontalAlignment="Center"
                                            FontSize="20" Style="{StaticResource Time}"
                                            Text="{Binding Content.ItemsSource.Count}">
-                                        <TextBlock.Effect>
-                                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" />
-                                        </TextBlock.Effect>
-                                    </TextBlock>
-                                </Border>
-                            </DockPanel>
-                            <ProgressBar Grid.Column="2" Maximum="{Binding SearchMax}" Value="{Binding SearchProgress}" Height="24" Visibility="Hidden">
-                                <ProgressBar.Style>
-                                    <Style>
-                                        <Setter Property="Control.Foreground" Value="#181818"/>
-                                        <Setter Property="Control.Background" Value="#262626"/>
-                                        <Setter Property="Control.BorderBrush" Value="#181818"/>
-                                    </Style>
-                                </ProgressBar.Style>
-                            </ProgressBar>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="3">
-                                <Button Content="Открыть" Width="100" Command="{Binding OpenPath}" Visibility="{Binding OpenPathVisible}" Style="{StaticResource MenuButton}" ToolTip="Открыть папку загруженных треков" />
-                                <Button Content="Очистить" Width="100" Style="{StaticResource MenuButton}" Visibility="{Binding ClearVisible}" Command="{Binding ClearList}" ToolTip="Очистить список"/>
-                                <Button Content="Назад" Width="100" Style="{StaticResource MenuButton}" Visibility="{Binding BackVisible}" Command="{Binding BackToCollections}" ToolTip="Назад к списку подборок" />
-                                <Button Content="Вернуться" Width="100" Style="{StaticResource MenuButton}" Visibility="{Binding ReturnVisible}" Command="{Binding Return}" ToolTip="Вернуться к прошлой подборке" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <DockPanel Grid.Row="2" Background="Transparent" Opacity="1">
-                        <ListView Style="{StaticResource PlayList}"
+                                            <TextBlock.Effect>
+                                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" />
+                                            </TextBlock.Effect>
+                                        </TextBlock>
+                                    </Border>
+                                </DockPanel>
+                                <ProgressBar Grid.Column="2" Maximum="{Binding SearchMax}" Value="{Binding SearchProgress}" Height="24" Visibility="Hidden">
+                                    <ProgressBar.Style>
+                                        <Style>
+                                            <Setter Property="Control.Foreground" Value="#181818"/>
+                                            <Setter Property="Control.Background" Value="#262626"/>
+                                            <Setter Property="Control.BorderBrush" Value="#181818"/>
+                                        </Style>
+                                    </ProgressBar.Style>
+                                </ProgressBar>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="3">
+                                    <Button Content="Открыть" Width="100" Command="{Binding OpenPath}" Visibility="{Binding OpenPathVisible}" Style="{StaticResource MenuButton}" ToolTip="Открыть папку загруженных треков" />
+                                    <Button Content="Очистить" Width="100" Style="{StaticResource MenuButton}" Visibility="{Binding ClearVisible}" Command="{Binding ClearList}" ToolTip="Очистить список"/>
+                                    <Button Content="Назад" Width="100" Style="{StaticResource MenuButton}" Visibility="{Binding BackVisible}" Command="{Binding BackToCollections}" ToolTip="Назад к списку подборок" />
+                                    <Button Content="Вернуться" Width="100" Style="{StaticResource MenuButton}" Visibility="{Binding ReturnVisible}" Command="{Binding Return}" ToolTip="Вернуться к прошлой подборке" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <DockPanel Grid.Row="2" Background="Transparent" Opacity="1" Visibility="Visible">
+                            <ListView Style="{StaticResource PlayList}"
                                   x:Name="LV" 
                                   SelectionChanged="LV_SelectionChanged">
-                            <ListView.ItemTemplateSelector>
-                                <databinding:ListViewSelector 
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <wrap:VirtualizingWrapPanel  Orientation="Vertical"/>
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                                <ListView.ItemTemplateSelector>
+                                    <databinding:ListViewSelector 
                                     MusicData="{StaticResource Music}"
-                                    CollectionsData="{StaticResource Collections}"/>
-                            </ListView.ItemTemplateSelector>
-                            <ListView.ItemContainerStyleSelector>
-                                <databinding:ListViewStyleSelector
+                                    CollectionsData="{StaticResource Collections}"
+                                    RadioData="{StaticResource Radio}"
+                                    UsersChartData="{StaticResource UsersChart}"/>
+                                </ListView.ItemTemplateSelector>
+                                <ListView.ItemContainerStyleSelector>
+                                    <databinding:ListViewStyleSelector
                                     MusicStyle="{StaticResource MusicStyle}"
-                                    CollectionsStyle="{StaticResource CollectionsStyle}" />
-                            </ListView.ItemContainerStyleSelector>
-                        </ListView>
-                    </DockPanel>
+                                    CollectionsStyle="{StaticResource CollectionsStyle}" 
+                                    RadioStyle="{StaticResource RadioStyle}"
+                                    UsersChartStyle="{StaticResource UsersChartStyle}"/>
+                                </ListView.ItemContainerStyleSelector>
+                            </ListView>
+                        </DockPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
-            <DockPanel Grid.Row="3" x:Name="seeker_panel">
+            </DockPanel>
+            <DockPanel Grid.Row="2" x:Name="single_poster" Height="0" Background="{Binding WindowColorStyle}">
+                <Button Style="{StaticResource MenuButton}"
+                        Visibility="Collapsed"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+                    <Image Source="{StaticResource back_a}" Width="40" Height="24"/>
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <BeginStoryboard Storyboard="{StaticResource single_playlist_mode}" />
+                        </EventTrigger>
+                    </Button.Triggers>
+                </Button>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">                      
+                        <Image Height="400" Width="400" Style="{StaticResource poster}" >
+                            <Image.Effect>
+                                <DropShadowEffect BlurRadius="35" ShadowDepth="1" Direction="30" />
+                            </Image.Effect>                             
+                        </Image>
+                    <StackPanel Orientation="Horizontal" Width="Auto" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Vertical" Margin="10">
+                            <TextBlock Text="{Binding PlayingMusic.Artist}" Style="{StaticResource Time}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding PlayingMusic.Title}" Style="{StaticResource Time}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{StaticResource AddToFavPlaying}" Command="{Binding AddToFavoriteListPlayingMusic}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="25 0">
+                        <Grid x:Name="Spectrum" Height="100">
+                            <TextBlock Text="{Binding CurrentAudioDevice.FriendlyName}"
+                               Foreground="{StaticResource ForegroundPitched}"
+                               FontFamily="Segoe UI Light" FontSize="50"
+                               Opacity="{StaticResource ShadowOpacity}"
+                               HorizontalAlignment="Right"/>
+                            <speccontrols:AudioSpectrum PitchColor="{StaticResource PitchColor}"
+                                            ForegroundPitched="{StaticResource ForegroundPitched}"
+                                            Foreground="{StaticResource Foreground}"
+                                            SpeedRaising="{StaticResource ShadowRaising}"
+                                            SpeedDropping="{StaticResource ShadowDropping}"
+                                            Opacity="{StaticResource ShadowOpacity}"/>
+                            <speccontrols:AudioSpectrum PitchColor="{StaticResource PitchColor}"
+                                            ForegroundPitched="{StaticResource ForegroundPitched}"
+                                            Foreground="{StaticResource Foreground}"
+                                            SpeedRaising="{StaticResource ActualRaising}"
+                                            SpeedDropping="{StaticResource ActualDropping}"/>
+                        </Grid>
+                        <Grid x:Name="Reflection" Height="70" RenderTransformOrigin="0.5 0.5">
+                            <Grid.Effect>
+                                <BlurEffect Radius="10" KernelType="Gaussian" RenderingBias="Performance"/>
+                            </Grid.Effect>
+                            <Grid.RenderTransform>
+                                <ScaleTransform ScaleY="-1" />
+                            </Grid.RenderTransform>
+                            <Grid.OpacityMask>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Offset="0" Color="Transparent"/>
+                                    <GradientStop Offset="1" Color="Black"/>
+                                </LinearGradientBrush>
+                            </Grid.OpacityMask>
+                            <speccontrols:AudioSpectrum PitchColor="{StaticResource PitchColor}"
+                                            ForegroundPitched="{StaticResource ForegroundPitched}"
+                                            Foreground="{StaticResource Foreground}"
+                                            SpeedRaising="{StaticResource ShadowRaising}"
+                                            SpeedDropping="{StaticResource ShadowDropping}"
+                                            Opacity="{StaticResource ShadowOpacity}"/>
+                            <speccontrols:AudioSpectrum PitchColor="{StaticResource PitchColor}"
+                                            ForegroundPitched="{StaticResource ForegroundPitched}"
+                                            Foreground="{StaticResource Foreground}"
+                                            SpeedRaising="{StaticResource ActualRaising}"
+                                            SpeedDropping="{StaticResource ActualDropping}"/>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </DockPanel>
+            <DockPanel Grid.Row="3" x:Name="seeker_panel" Background="Transparent">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -280,7 +384,7 @@
                     </TextBlock>
                 </Grid>
             </DockPanel>
-            <DockPanel Grid.Row="4" Height="44" Background="{Binding SetColor}" Opacity="0.7" MouseLeave="DockPanel_MouseLeave">
+            <DockPanel Grid.Row="4" x:Name="bottom_panel" Height="64" Background="{Binding SetColor}" Opacity="1" MouseLeave="DockPanel_MouseLeave" VerticalAlignment="Center">
                 <Grid Height="40">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130"/>
@@ -300,7 +404,7 @@
                                 <Image Width="28" Source="{StaticResource play_skip_back}" />
                             </Button>
                             <Button Grid.Column="1" x:Name="play_pause_btn" Style="{StaticResource Controls}" Command="{Binding PlayFile}" ToolTip="{Binding PlayText}">
-                                <Image x:Name="play_pause_btn_image" Width="40" Source="{Binding PlayBtn}" />
+                                <Image x:Name="play_pause_btn_image" Width="40" Style="{StaticResource play_button}"/>
                             </Button>
                             <Button Grid.Column="2" x:Name="next_btn" Style="{StaticResource Controls}" Command="{Binding PlayNext}" ToolTip="Следующий">
                                 <Image Width="28" Source="{StaticResource play_skip_next}" />
@@ -320,11 +424,23 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="120"/>
                             </Grid.ColumnDefinitions>
-                            <Image Grid.Column="0" Width="40" Source="{Binding PlayingMusic.Poster}">
-                                <Image.Effect>
-                                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" />
-                                </Image.Effect>
-                            </Image>
+                            <CheckBox x:Name="poster_check" Style="{StaticResource song_panel_poster_check}" Width="40" Height="40" Click="CheckBox_Click">
+                                <Image Grid.Column="0" x:Name="song_panel_poster_image" Style="{StaticResource poster}" Width="40" Height="40" VerticalAlignment="Center">
+                                    <Image.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" />
+                                    </Image.Effect>
+                                </Image>                                   
+                                <CheckBox.Triggers>
+                                    <EventTrigger RoutedEvent="CheckBox.Checked">
+                                        <BeginStoryboard Storyboard="{StaticResource single_poster_mode}" />
+                                        
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="CheckBox.Unchecked">
+                                        <BeginStoryboard Storyboard="{StaticResource single_playlist_mode}" />
+                                    </EventTrigger>
+                                </CheckBox.Triggers>
+                            </CheckBox>
+                             
                             <Grid Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="20" />
@@ -347,16 +463,21 @@
                                         <ColumnDefinition Width="32" />
                                         <ColumnDefinition Width="1*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Style="{StaticResource Favorite}" Command="{Binding AddToFavoriteList}" Background="Transparent">
-                                        <Image Width="24" Height="24" Source="{Binding PlayingMusic.LikedState, Mode=OneWay}" >
-                                            <Image.Effect>
-                                                <DropShadowEffect BlurRadius="15" ShadowDepth="1" Direction="290" Color="Gold" />
-                                            </Image.Effect>
-                                        </Image>
+                                    <Button Grid.Column="0" Style="{StaticResource AddToFavPlaying}" Command="{Binding AddToFavoriteListPlayingMusic}" Background="Transparent">
+                                            <!--<Image Width="24" Height="24" Source="{StaticResource like}">
+                                                <Image.Effect>
+                                                    <DropShadowEffect BlurRadius="15" ShadowDepth="1" Direction="290" Color="Gold" />
+                                                </Image.Effect>
+                                            </Image>-->
                                     </Button>
                                 </Grid>
                             </DockPanel>
                         </Grid>
+                        <!--<StackPanel.Triggers>
+                            <DataTrigger Binding="{Binding PlayingMusic.LocalFile}" Value="True">
+                                <Setter TargetName="song_panel_poster_image" Property="Source" Value="{StaticResource empty_poster}" />
+                            </DataTrigger>
+                        </StackPanel.Triggers>-->
                     </StackPanel>
                     <DockPanel Grid.Column="2" x:Name="additional_panel" Margin="0,0,6,0" Opacity="1">
                         <Grid >
@@ -376,7 +497,7 @@
                                     <RowDefinition Height="40"/>
                                     <RowDefinition Height="0"/>
                                 </Grid.RowDefinitions>
-                                <DockPanel Grid.Row="0" Width="120" VerticalAlignment="Center" x:Name="volume_panel" Visibility="Hidden" Opacity="{Binding Opacity}">
+                                <DockPanel Grid.Row="0" Width="120" VerticalAlignment="Center" x:Name="volume_panel" Margin="0,0,0,0" Visibility="Hidden" Opacity="{Binding Opacity}">
                                     <Slider x:Name="volume_control" 
                                         IsSnapToTickEnabled="True" 
                                         Style="{StaticResource VolumeControl}" 
@@ -403,6 +524,6 @@
                 </Grid>
             </DockPanel>
         </Grid>           
-    </DockPanel>
-
+    </Border>
+    
 </controls:BlurryWindow>

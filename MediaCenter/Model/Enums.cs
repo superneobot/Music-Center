@@ -10,6 +10,7 @@
         Search = 2,
         Favorite = 3,
         Radio = 4,
-        Collections = 5
+        Collections = 5,
+        UsersChart = 6
     }
 }

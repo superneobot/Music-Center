@@ -6,9 +6,9 @@ namespace MediaCenter.Model {
         private IWavePlayer _waveout { get; set; }
         private AudioFileReader _reader { get; set; }
         public NAudio.Wave.PlaybackState State { get; set; }
-        public Player() {
-            // _waveout = new WaveOut();
-
+        public Player(long volume) {
+             _waveout = new WaveOut();
+            _waveout.Volume = volume / 100;
         }
         public Task Play(string file) {
             try {

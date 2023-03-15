@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using MediaCenter.SpectrumAnalizer.Models;
 
 namespace MediaCenter {
     /// <summary>
@@ -31,6 +32,9 @@ namespace MediaCenter {
             IntPtr windowhandle = new WindowInteropHelper(this).Handle;
             HwndSource hwndSource = HwndSource.FromHwnd(windowhandle);
             hwndSource.AddHook(new HwndSourceHook(WndProc));
+            MainViewModel vm = (MainViewModel)DataContext;
+            volume_control.Value = (int)Properties.Settings.Default.volume;
+            vm.Volume = (long)Properties.Settings.Default.volume;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) {
@@ -205,8 +209,14 @@ namespace MediaCenter {
             vm.Time = null;
         }
 
-        private void clear_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e) {
-
+        private void CheckBox_Click(object sender, RoutedEventArgs e) {
+            //SpectrumAnalyzer.Models.AnalyzerViewModel vis = (SpectrumAnalyzer.Models.AnalyzerViewModel)DataContext;
+            //if(poster_check.IsChecked == false) {
+            //    vis.End();
+            //}
+            //if(poster_check.IsChecked == true) {
+            //    vis.Begin();
+            //}
         }
     }
 }

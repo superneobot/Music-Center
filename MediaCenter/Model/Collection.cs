@@ -13,24 +13,14 @@ namespace MediaCenter.Model {
                 OnPropertyChanged(nameof(Title));
             }
         }
-        private string _url;
-        public string Url {
+        private string _avatar;
+        public string Avatar {
             get {
-                return _url;
+                return _avatar;
             }
             set {
-                _url = value;
-                OnPropertyChanged(nameof(Url));
-            }
-        }
-        private string _poster;
-        public string Poster {
-            get {
-                return _poster;
-            }
-            set {
-                _poster = value;
-                OnPropertyChanged(nameof(Poster));
+                _avatar = value;
+                OnPropertyChanged(nameof(Avatar));
             }
         }
         private ObservableCollection<DataSource> _list;
@@ -44,11 +34,10 @@ namespace MediaCenter.Model {
             }
         }
         public Collection() { }
-        public Collection(string title, string url, string poster) {
+        public Collection(string title, string avatar, ObservableCollection<DataSource> list) {
             Title = title;
-            Url = url;
-            Poster = poster;
-            //List = list;
+            Avatar = avatar;
+            List = list;
         }
 
 

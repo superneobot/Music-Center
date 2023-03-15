@@ -130,7 +130,7 @@ namespace MediaCenter.Views {
             check_style_matglass.IsChecked = false;
             check_style_set.IsChecked = false;
             //if(model.Transparent == true)
-                model.Strenght = 0.7;
+            model.Strenght = 0.7;
             //if (model.Transparent == false)
             //    model.Strenght = 1.0;
             model.WindowColor = new System.Windows.Media.SolidColorBrush(Color.FromArgb(0, 17, 17, 17)).ToString().Remove(0, 3).Insert(0, "#");
@@ -143,7 +143,7 @@ namespace MediaCenter.Views {
             check_style_matglass.IsChecked = true;
             check_style_set.IsChecked = false;
             //if (model.Transparent == true)
-                model.Strenght = 0.9;
+            model.Strenght = 0.9;
             //if (model.Transparent == false)
             //    model.Strenght = 1.0;
             model.WindowColor = new System.Windows.Media.SolidColorBrush(Color.FromArgb(0, 34, 34, 34)).ToString().Remove(0, 3).Insert(0, "#");
@@ -160,7 +160,7 @@ namespace MediaCenter.Views {
                 var blue = color.Color.B;
                 model.WindowColor = new System.Windows.Media.SolidColorBrush(Color.FromArgb(alpha, red, green, blue)).ToString();
                 //if (model.Transparent == true)
-                    model.Strenght = 0.3;
+                model.Strenght = 0.3;
                 //if (model.Transparent == false)
                 //    model.Strenght = 1.0;
                 model.WindowColorStyle = WindowColorStyle.Set;
@@ -187,7 +187,7 @@ namespace MediaCenter.Views {
             check_savepath_mymusic.IsChecked = true;
             check_savepath_set.IsChecked = false;
             //
-            model.SavePath = KnownFolders.GetPath(KnownFolder.Music);
+            model.SavePath = KnownFolders.GetPath(KnownFolder.Music) + @"\";
         }
 
         private void check_savepath_set_Click(object sender, RoutedEventArgs e) {
@@ -196,7 +196,7 @@ namespace MediaCenter.Views {
             if (result == System.Windows.Forms.DialogResult.OK) {
                 var path = fbd.SelectedPath;
                 System.Windows.MessageBox.Show($"{path}", "Music Center", MessageBoxButton.OK, MessageBoxImage.Information);
-                model.SavePath = path;
+                model.SavePath = path + @"\";
                 //
                 model.SavingPath = SavingPath.Set;
                 check_savepath_default.IsChecked = false;
@@ -212,7 +212,7 @@ namespace MediaCenter.Views {
         }
 
         private void transparent_Click(object sender, RoutedEventArgs e) {
-            if(model.Transparent == false) {
+            if (model.Transparent == false) {
                 transparent.IsChecked = true;
                 model.Transparent = true;
             }

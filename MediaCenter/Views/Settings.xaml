@@ -1,4 +1,4 @@
-﻿<controls:BlurryWindow x:Class="MediaCenter.Views.Settings"
+﻿<Window x:Class="MediaCenter.Views.Settings"
         xmlns:internals="clr-namespace:BlurryControls.Internals;assembly=BlurryControls"
         xmlns:controls="clr-namespace:BlurryControls.Controls;assembly=BlurryControls"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,21 +6,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MediaCenter.Views"
-        Background="#111"  
-        mc:Ignorable="d" Strength="0.5"
-        IsMenuBarVisible="False" CloseOnIconDoubleClick="True"
-        Title="Настройки" Height="360" Width="400" WindowStartupLocation="CenterScreen" IsResizable="False" Icon="{StaticResource logo}" Loaded="Window_Loaded" Topmost="True" IsManipulationEnabled="True" ShowInTaskbar="False">
-    <DockPanel Background="Transparent" MouseDown="DockPanel_MouseDown">
+        Background="#333"  
+        mc:Ignorable="d"   WindowStyle="None"
+        Title="Настройки" Height="365" Width="400" WindowStartupLocation="CenterScreen" Icon="{StaticResource logo}" ResizeMode="NoResize" Loaded="Window_Loaded" Topmost="True" IsManipulationEnabled="True" ShowInTaskbar="False">
+    <Border Background="Transparent" MouseDown="DockPanel_MouseDown" BorderThickness="2" BorderBrush="#111">
         <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Background="#111">
                 <Button x:Name="close" Style="{StaticResource SystemButtons}" Content="X" Click="close_btn_Click" HorizontalAlignment="Right" ToolTip="Закрыть настройки" Visibility="Collapsed"/>
-                <Image Source="{StaticResource logo}" />
-                <TextBlock Grid.Row="0" Text="Настройки приложения" Style="{StaticResource Logo}" HorizontalAlignment="Left"  Margin="5,0,0,0"/>
-                
+                <Image Source="{StaticResource logo}" Width="24" Margin="3,0,0,0"/>
+                <TextBlock Grid.Row="0" Text="Настройки приложения" Style="{StaticResource Logo}" HorizontalAlignment="Left"  Margin="5,0,0,0"/>                        
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="5">
                 <TextBlock Text="Цвет панели и элементов" Style="{StaticResource Time}"/>
@@ -81,9 +79,7 @@
                 <StackPanel Orientation="Vertical">
                     <Button x:Name="close_btn" Style="{StaticResource MenuButton}" Content="OK" Width="120" Height="30" HorizontalAlignment="Right" Margin="2" Click="close_btn_Click"/>
                 </StackPanel>
-
-
             </StackPanel>
         </Grid>
-    </DockPanel>
-</controls:BlurryWindow>
+    </Border>
+</Window>

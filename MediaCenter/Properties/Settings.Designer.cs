@@ -106,5 +106,41 @@ namespace MediaCenter.Properties {
                 this["transparent"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("70")]
+        public int Bins {
+            get {
+                return ((int)(this["Bins"]));
+            }
+            set {
+                this["Bins"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int Rate {
+            get {
+                return ((int)(this["Rate"]));
+            }
+            set {
+                this["Rate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255")]
+        public int Normal {
+            get {
+                return ((int)(this["Normal"]));
+            }
+            set {
+                this["Normal"] = value;
+            }
+        }
     }
 }

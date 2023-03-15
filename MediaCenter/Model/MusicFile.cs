@@ -1,12 +1,17 @@
 ﻿using MediaCenter.ViewModel;
+using Newtonsoft.Json;
 using System;
 public enum SourceType {
     Music,
-    Collection
+    Collection,
+    Radio,
+    Wave,
+    Users
 }
 namespace MediaCenter.Model {
     [Serializable]
     public class DataSource : ViewModelBase {
+        [JsonProperty("SourceType")]
         private SourceType _type;
         public SourceType Type {
             get { return _type; }
@@ -15,18 +20,11 @@ namespace MediaCenter.Model {
                 OnPropertyChanged(nameof(Type));
             }
         }
-        private int _id;
-        public int Id {
-            get { return _id; }
-            set {
-                _id = value;
-                OnPropertyChanged(nameof(Id));
-            }
-        }
         private string _title;
         /// <summary>
         /// Заголовок
         /// </summary>
+        [JsonProperty("Title")]
         public string Title {
             get { return _title; }
             set {
@@ -38,6 +36,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Исполнитель
         /// </summary>
+        [JsonProperty("Artist")]
         public string Artist {
             get { return _artist; }
             set {
@@ -49,6 +48,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Альбом
         /// </summary>
+        [JsonProperty("Album")]
         public string Album {
             get { return _album; }
             set {
@@ -60,6 +60,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Постер
         /// </summary>
+        [JsonProperty("Poster")]
         public string Poster {
             get { return _poster; }
             set {
@@ -71,6 +72,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Длительность
         /// </summary>
+        [JsonProperty("Duration")]
         public string Duration {
             get { return _duration; }
             set {
@@ -82,6 +84,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Путь к файлу (локальный)
         /// </summary>
+        [JsonProperty("FilePath")]
         public string FilePath {
             get { return _filePath; }
             set {
@@ -93,6 +96,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Путь к файлу (внешний)
         /// </summary>
+        [JsonProperty("Source")]
         public string Source {
             get { return _source; }
             set {
@@ -104,6 +108,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Url файла
         /// </summary>
+        [JsonProperty("URL")]
         public string URL {
             get { return _url; }
             set {
@@ -115,6 +120,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Статус файла (нравится или нет)
         /// </summary>
+        [JsonProperty("Liked")]
         public bool Liked {
             get { return _liked; }
             set {
@@ -122,32 +128,11 @@ namespace MediaCenter.Model {
                 OnPropertyChanged(nameof(Liked));
             }
         }
-        private string likedState;
-        /// <summary>
-        /// Тест 
-        /// </summary>
-        public string LikedState {
-            get {
-                if (_liked) {
-                    likedState = @"/Resources/like.png";
-                } else {
-                    likedState = @"/Resources/not_like.png";
-                }
-                return likedState;
-            }
-            set {
-                if (_liked) {
-                    likedState = @"/Resources/like.png";
-                } else {
-                    likedState = @"/Resources/not_like.png";
-                }
-                OnPropertyChanged("LikedState");
-            }
-        }
         private bool _isPlay;
         /// <summary>
         /// Файл воспроизводится
         /// </summary>
+        [JsonProperty("IsPlay")]
         public bool IsPlay {
             get {
                 return _isPlay;
@@ -161,6 +146,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Файл на паузе
         /// </summary>
+        [JsonProperty("IsPaused")]
         public bool IsPaused {
             get {
                 return _isPaused;
@@ -174,6 +160,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Расположение файла
         /// </summary>
+        [JsonProperty("Location")]
         public Location Location {
             get {
                 return _location;
@@ -187,6 +174,7 @@ namespace MediaCenter.Model {
         /// <summary>
         /// Статус загрузки
         /// </summary>
+        [JsonProperty("Download")]
         public bool Download {
             get {
                 return _download;
@@ -197,6 +185,10 @@ namespace MediaCenter.Model {
             }
         }
         private bool _localFile;
+        [JsonProperty("LocalFile")]
+        /// <summary>
+        /// Уточнение что файл локальный
+        /// </summary>
         public bool LocalFile {
             get {
                 return _localFile;
@@ -206,6 +198,26 @@ namespace MediaCenter.Model {
                 OnPropertyChanged(nameof(LocalFile));
             }
         }
+        /// <summary>
+        /// Добавление радио
+        /// </summary>
+        /// <param name="title">Название</param>
+        /// <param name="poster">Постер</param>
+        /// <param name="url">Адрес</param>
+        /// <param name="type">Тип</param>
+        public DataSource(string title, string poster, string url, SourceType type) {
+            Artist = type.ToString();
+            Title = title;
+            Poster = poster;
+            FilePath = url;
+            Type = type;
+        }
+        /// <summary>
+        /// Добавление коллекции
+        /// </summary>
+        /// <param name="title">Название</param>
+        /// <param name="poster">Постер</param>
+        /// <param name="url">Ссылка</param>
         public DataSource(string title, string poster, string url) {
             Title = title;
             Poster = poster;
@@ -233,21 +245,9 @@ namespace MediaCenter.Model {
             _filePath = source;
             // _url = url;
             _location = location;
-            _id++;
             Type = SourceType.Music;
             LocalFile = false;
         }
-        ///// <summary>
-        ///// Добавление файла локально (тест)
-        ///// </summary>
-        ///// <param name="title"></param>
-        ///// <param name="artist"></param>
-        ///// <param name="filepath"></param>
-        //public MusicFile(string title, string artist, string filepath) {
-        //    _title = title;
-        //    _artist = artist;
-        //    _filePath = filepath;
-        //}
         /// <summary>
         /// Добавление файла локально и чтение информации из его тега
         /// </summary>
@@ -259,11 +259,9 @@ namespace MediaCenter.Model {
             getDuration(file);
             getPoster(file);
             getFilePath(file);
-            getState(file);
             LocalFile = true;
             Location = Location.Local;
             Type = SourceType.Music;
-            _id++;
         }
         /// <summary>
         /// Чтение из тега заголовка
@@ -285,7 +283,7 @@ namespace MediaCenter.Model {
             var file = TagLib.File.Create(path);
             var art = file.Tag.FirstPerformer;
             if (art == null)
-                _artist = "";
+                _artist = Type.ToString();
             else
                 _artist = art.Replace("[mp3xa.cc]", "")
                     .Replace("&amp;", "&")
@@ -325,43 +323,29 @@ namespace MediaCenter.Model {
         /// </summary>
         /// <param name="path">Путь к файлу</param>
         private void getPoster(string path) {
-            _poster = $@"/Resources/music.png";
+            _poster = null;
             //_poster = "";
-        }
-        /// <summary>
-        /// Проверка на лайк
-        /// </summary>
-        /// <param name="file">Путь к файлу</param>
-        private void getState(string file) {
-            if (Liked) {
-                LikedState = @"/Resources/like.png";
-            } else {
-                LikedState = @"/Resources/not_like.png";
-            }
         }
 
         public override bool Equals(object obj) {
             var item = obj as DataSource;
-            if (item == null)
-                return false;
-            return this.Title == item.Title | this.Artist == item.Artist;
+            if (item == null) return false;
+            if(item.FilePath == this.FilePath)
+                return true;
+            return base.Equals(obj);
         }
-
-
 
         public override int GetHashCode() {
-            return this.Title.GetHashCode();
+            return base.GetHashCode();
         }
-
         //public override bool Equals(object obj) {
-        //    var item = obj as MusicFile;
-        //    if (item == null) {
+        //    var item = obj as DataSource;
+        //    if (item == null)
         //        return false;
-        //    }
-        //    return this.Id == item.Id;
+        //    return this.FilePath == item.FilePath;// | this.Artist == item.Artist;
         //}
         //public override int GetHashCode() {
-        //    return this.Id.GetHashCode();
+        //    return this.FilePath.GetHashCode();
         //}
     }
 }

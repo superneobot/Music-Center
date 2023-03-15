@@ -12,9 +12,9 @@ namespace MediaCenter {
     /// Логика взаимодействия для App.xaml
     /// </summary>
     public partial class App : Application {
-
         protected override void OnStartup(StartupEventArgs e) {
             base.OnStartup(e);
+
             if (!InstanceCheck()) {
                 Process.GetCurrentProcess().Kill();
             } else {
@@ -24,14 +24,28 @@ namespace MediaCenter {
                 window.DataContext = model;
                 window.Show();
                 //
-                var path = AppContext.BaseDirectory + @"Downloaded";
+                var path = Path.Combine(Environment.CurrentDirectory, @"Downloaded");
+                var database = Path.Combine(Environment.CurrentDirectory, @"Database");
                 if (Directory.Exists(path)) {
-                    return;
+                    //return;
                 } else {
                     Directory.CreateDirectory(path);
                 }
+                if (Directory.Exists(database)) {
+                    //DirectoryInfo dir = new DirectoryInfo(database);
+                    //foreach (var file in dir.GetDirectories()) {
+                    //    file.Delete(true);
+                    //}
+                    //Directory.CreateDirectory(database);
+                } else {
+                    Directory.CreateDirectory(database);
+                }
+                //
+
+
             }
         }
+
 
         static Mutex InstanceCheckMutex;
         static bool InstanceCheck() {

@@ -1,13 +1,10 @@
-﻿using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices;
+﻿using MediaCenter.ViewModel;
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using MediaCenter.ViewModel;
-using BlurryControls.Internals;
-using BlurryControls.Controls;
-using System.Diagnostics;
 
 namespace MediaCenter {
     /// <summary>
@@ -88,7 +85,7 @@ namespace MediaCenter {
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
-            
+
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
