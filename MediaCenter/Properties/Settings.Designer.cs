@@ -109,7 +109,7 @@ namespace MediaCenter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("70")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
         public int Bins {
             get {
                 return ((int)(this["Bins"]));
@@ -121,7 +121,7 @@ namespace MediaCenter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
         public int Rate {
             get {
                 return ((int)(this["Rate"]));

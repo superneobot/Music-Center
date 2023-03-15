@@ -1671,7 +1671,7 @@ namespace MediaCenter.ViewModel {
         }
         private Task DownloadDatabase() {
             NetworkCredential credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
-            string url = "ftp://77.222.40.224/Database/";
+           // string url = "ftp://77.222.40.224/Database/";
 
             Loader.DownloadFile(Path.Combine(Environment.CurrentDirectory, "Database"), "/Database/", "kalkyneogm_admin", "Sneo2352816botS");
 

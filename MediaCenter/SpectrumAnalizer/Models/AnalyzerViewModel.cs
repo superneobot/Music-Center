@@ -57,7 +57,7 @@ namespace MediaCenter.SpectrumAnalyzer.Models {
         private int _normal;
         private bool _detectBeats;
         private int _minFrequency = 20;
-        private int _maxFrequency = 5000; // 20000?
+        private int _maxFrequency = 3000; // 20000?
         private ScalingStrategy _scalingStrategy = ScalingStrategy.Sqrt;
         private bool _logarithmicX = true;
         private bool _average;

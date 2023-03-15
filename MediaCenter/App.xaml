@@ -189,7 +189,7 @@
                 <DrawingGroup ClipGeometry="M0,0 V48 H48 V0 H0 Z">
                     <DrawingGroup Opacity="1">
                         <GeometryDrawing Brush="#DEC63D" Geometry="F1 M48,48z M0,0z M24,2A22,22,0,1,0,46,24A22,22,0,0,0,24,2z" />
-                        <GeometryDrawing Brush="GhostWhite" Geometry="F1 M48,48z M0,0z M19.4,33.1L19.4,14.9A1,1,0,0,1,21,14.08L34.23,23.18A1,1,0,0,1,34.23,24.83L21,33.92A1,1,0,0,1,19.4,33.1z" />
+                        <GeometryDrawing Brush="Black" Geometry="F1 M48,48z M0,0z M19.4,33.1L19.4,14.9A1,1,0,0,1,21,14.08L34.23,23.18A1,1,0,0,1,34.23,24.83L21,33.92A1,1,0,0,1,19.4,33.1z" />
                     </DrawingGroup>
                 </DrawingGroup>
             </DrawingImage.Drawing>
@@ -202,8 +202,8 @@
                             <SolidColorBrush Color="#DEC63D" Opacity="1" />
                         </GeometryDrawing.Brush>
                     </GeometryDrawing>
-                    <GeometryDrawing Brush="GhostWhite" Geometry="F1 M24,24z M0,0z M10.72,15.0298L10.72,8.9698C10.72,8.4898,10.52,8.2998,10.01,8.2998L8.71,8.2998C8.2,8.2998,8,8.4898,8,8.9698L8,15.0298C8,15.5098,8.2,15.6998,8.71,15.6998L10,15.6998C10.52,15.6998,10.72,15.5098,10.72,15.0298z" />
-                    <GeometryDrawing Brush="GhostWhite" Geometry="F1 M24,24z M0,0z M15.9991,15.0298L15.9991,8.9698C15.9991,8.4898,15.7991,8.2998,15.2891,8.2998L13.9991,8.2998C13.4891,8.2998,13.2891,8.4898,13.2891,8.9698L13.2891,15.0298C13.2891,15.5098,13.4891,15.6998,13.9991,15.6998L15.2891,15.6998C15.7991,15.6998,15.9991,15.5098,15.9991,15.0298z" />
+                    <GeometryDrawing Brush="Black" Geometry="F1 M24,24z M0,0z M10.72,15.0298L10.72,8.9698C10.72,8.4898,10.52,8.2998,10.01,8.2998L8.71,8.2998C8.2,8.2998,8,8.4898,8,8.9698L8,15.0298C8,15.5098,8.2,15.6998,8.71,15.6998L10,15.6998C10.52,15.6998,10.72,15.5098,10.72,15.0298z" />
+                    <GeometryDrawing Brush="Black" Geometry="F1 M24,24z M0,0z M15.9991,15.0298L15.9991,8.9698C15.9991,8.4898,15.7991,8.2998,15.2891,8.2998L13.9991,8.2998C13.4891,8.2998,13.2891,8.4898,13.2891,8.9698L13.2891,15.0298C13.2891,15.5098,13.4891,15.6998,13.9991,15.6998L15.2891,15.6998C15.7991,15.6998,15.9991,15.5098,15.9991,15.0298z" />
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
@@ -496,8 +496,8 @@
         </Style>
         <Style x:Key="Title" TargetType="TextBlock">
             <Style.Setters>
-                <Setter Property="Foreground" Value="GhostWhite"/>
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Foreground" Value="Silver"/>
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalAlignment" Value="Left"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="FontFamily" Value="{StaticResource Font}"/>
@@ -507,7 +507,7 @@
         <Style x:Key="Artist" TargetType="TextBlock">
             <Style.Setters>
                 <Setter Property="Foreground" Value="GhostWhite"/>
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalAlignment" Value="Left"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="FontFamily" Value="{StaticResource Font}"/>
@@ -516,8 +516,8 @@
         </Style>
         <Style x:Key="Album" TargetType="TextBlock">
             <Style.Setters>
-                <Setter Property="Foreground" Value="GhostWhite"/>
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Foreground" Value="Silver"/>
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalAlignment" Value="Left"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="FontFamily" Value="{StaticResource Font}"/>
@@ -686,6 +686,7 @@
         <Style x:Key="PlayListButtons" TargetType="Button">             
             <Style.Setters>
                 <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
@@ -1039,7 +1040,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListViewItem}">
-                            <Border Padding="2,0,2,0" Height="50" Width="Auto" Background="Transparent" BorderThickness="0" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="0">
+                            <Border Padding="2,0,2,0" Height="65" Width="Auto" Background="Transparent" BorderThickness="0" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="0">
                                 <!--<Border.ToolTip>
                                         <Border Padding="2">
                                             <Grid x:Name="tooltip_main_grid">
@@ -1070,7 +1071,7 @@
                                             </Grid>
                                     </Border>
                                 </Border.ToolTip>-->
-                                <Border Height="50"
+                                <Border Height="64"
                                         Width="Auto"
                                         Opacity="{TemplateBinding Opacity}"
                                         x:Name="border"
@@ -2222,10 +2223,10 @@
         <!--#region  Templates -->
         <DataTemplate x:Key="Music">
             <Border BorderBrush="Transparent" BorderThickness="0" Opacity="0.9" x:Name="item_border" Width="Auto">
-                    <Grid Height="48" Background="Transparent" x:Name="lv_item" Width="Auto">
+                    <Grid Height="64" Background="Transparent" x:Name="lv_item" Width="Auto">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="40" />
@@ -2241,32 +2242,27 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="border_poster" Background="Transparent">
-                            <StackPanel Height="42" VerticalAlignment="Center" x:Name="poster_in_list_panel" Background="Transparent">
-                                <!--<StackPanel.Background>
-                                    <ImageBrush x:Name="poster_image" ImageSource="{Binding Poster}"/>
-                                </StackPanel.Background>-->
+                            <StackPanel Height="60" VerticalAlignment="Center" x:Name="poster_in_list_panel" Background="Transparent">                                
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <Image x:Name="poster_image" Source="{Binding Poster}" Width="42" />
-                                
-                                <Button Style="{StaticResource PlayListButtons}" x:Name="play_btn" Click="MakeItemSelected" Visibility="Hidden">
+                                    <Image x:Name="poster_image" Source="{Binding Poster}" Width="60" />                                 
+                                <Button Style="{StaticResource PlayListButtons}" x:Name="play_btn" Click="MakeItemSelected" Visibility="Visible">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="Click">
                                             <i:InvokeCommandAction Command="{Binding DataContext.PlayFile, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                                                                           CommandParameter="{Binding SelectedItem, ElementName=LV}"/>
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
-
                                     <Grid Width="44" Height="44">
                                         <Image Source="{StaticResource playlist_play}" x:Name="bg_image" Width="34">
-                                            <Image.Effect>
+                                            <!--<Image.Effect>
                                                <DropShadowEffect x:Name="play_effect" BlurRadius="15" Direction="270" ShadowDepth="1"/>
-                                            </Image.Effect>
+                                            </Image.Effect>-->
                                         </Image>
-                                        <StackPanel x:Name="visualisation" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                            <Grid x:Name="equilizer" Margin="0,0,0,6" Opacity="1">
+                                        <DockPanel x:Name="visualisation" Width="44" Height="44" Background="Transparent">
+                                            <!--<Grid x:Name="equilizer" Margin="0,0,0,6" Opacity="1">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="6"/>
                                                     <ColumnDefinition Width="6"/>
@@ -2281,8 +2277,14 @@
                                                 <Border Grid.Column="3" Width="4" Height="0" Background="{StaticResource BarColor}" Padding="4" VerticalAlignment="Bottom" x:Name="eq_4"/>
                                                 <Border Grid.Column="4" Width="4" Height="0" Background="{StaticResource BarColor}" Padding="4" VerticalAlignment="Bottom" x:Name="eq_5"/>
                                                 <Border Grid.Column="5" Width="4" Height="0" Background="{StaticResource BarColor}" Padding="4" VerticalAlignment="Bottom" x:Name="eq_6"/>
-                                            </Grid>
-                                        </StackPanel>
+                                            </Grid>-->
+                                            <Ellipse x:Name="circle" Width="0" Height="0" Fill="{StaticResource BarColor}" Margin="0,0,0,0" RenderTransformOrigin="2.5,2.5">
+                                                <Ellipse.RenderTransform>
+                                                    <RotateTransform Angle="0"/>
+                                                </Ellipse.RenderTransform>
+                                            </Ellipse>
+                                            
+                                        </DockPanel>
                                     </Grid>
                                 </Button>
                                 </Grid>
@@ -2295,8 +2297,8 @@
                                 <ColumnDefinition Width="300" />
                                 <ColumnDefinition Width="300" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" Grid.Column="0" Style="{StaticResource Title}"/>
-                            <TextBlock Text="{Binding Artist}" TextWrapping="Wrap" Grid.Column="1" Style="{StaticResource Artist}"/>
+                            <TextBlock Text="{Binding Artist}" TextWrapping="Wrap" Grid.Column="0" Style="{StaticResource Artist}"/>
+                            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" Grid.Column="1" Style="{StaticResource Title}"/>
                             <TextBlock Text="{Binding Album}" TextWrapping="Wrap" Grid.Column="2" Style="{StaticResource Album}"/>
                         </Grid>
                         </StackPanel>
@@ -2343,20 +2345,24 @@
                 <DataTrigger Binding="{Binding IsPlay}" Value="True">
                     <DataTrigger.EnterActions>
                         <BeginStoryboard x:Name="play_anim">
-                            <Storyboard x:Name="play_anim_sb">
+                            <!--<Storyboard x:Name="play_anim_sb">
                                 <DoubleAnimation Storyboard.TargetName="eq_1" Storyboard.TargetProperty="(FrameworkElement.Height)" To="32" Duration="0:0:0.3" AutoReverse="True" RepeatBehavior="Forever" />
                                 <DoubleAnimation Storyboard.TargetName="eq_2" Storyboard.TargetProperty="(FrameworkElement.Height)" To="24" Duration="0:0:0.2" AutoReverse="True" RepeatBehavior="Forever" />
                                 <DoubleAnimation Storyboard.TargetName="eq_3" Storyboard.TargetProperty="(FrameworkElement.Height)" To="32" Duration="0:0:0.4" AutoReverse="True" RepeatBehavior="Forever" />
                                 <DoubleAnimation Storyboard.TargetName="eq_4" Storyboard.TargetProperty="(FrameworkElement.Height)" To="24" Duration="0:0:0.1" AutoReverse="True" RepeatBehavior="Forever" />
                                 <DoubleAnimation Storyboard.TargetName="eq_5" Storyboard.TargetProperty="(FrameworkElement.Height)" To="32" Duration="0:0:0.5" AutoReverse="True" RepeatBehavior="Forever" />
                                 <DoubleAnimation Storyboard.TargetName="eq_6" Storyboard.TargetProperty="(FrameworkElement.Height)" To="24" Duration="0:0:0.2" AutoReverse="True" RepeatBehavior="Forever" />
+                            </Storyboard>-->
+                            <Storyboard x:Name="play_anim_sb">
+                                <DoubleAnimation Storyboard.TargetName="circle" Storyboard.TargetProperty="(FrameworkElement.Width)" From="10.0" To="20.0" Duration="0:0:0.25" AutoReverse="True" RepeatBehavior="Forever" />
+                                <DoubleAnimation Storyboard.TargetName="circle" Storyboard.TargetProperty="(FrameworkElement.Height)" From="10.0" To="20.0" Duration="0:0:0.25" AutoReverse="True" RepeatBehavior="Forever" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
                     <Setter TargetName="song_duration" Property="Text" Value="{Binding Text, ElementName=current_time}" />
                     <Setter TargetName="lv_item" Property="Background" Value="#444" />
                     <Setter TargetName="lv_item" Property="Opacity" Value="1" />
-                    <Setter TargetName="play_btn" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="play_btn" Property="Visibility" Value="Hidden" />
                     <Setter TargetName="bg_image" Property="Visibility" Value="Hidden" />
                     <Setter TargetName="item_border" Property="BorderBrush" Value="#111"/>
                     <Setter TargetName="item_border" Property="BorderThickness" Value="0"/>
@@ -2400,7 +2406,7 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" Value="True">
                     <Setter TargetName="add_to_fav" Property="Visibility" Value="Visible" />
-                    <Setter TargetName="play_btn" Property="Visibility" Value="Hidden" />
+                    <Setter TargetName="play_btn" Property="Visibility" Value="Visible" />
                     <Setter TargetName="visualisation" Property="Visibility" Value="Hidden" />
                     <Setter TargetName="bg_image" Property="Visibility" Value="Visible" />
                     <Setter TargetName="load_state" Property="Source" Value="{StaticResource save}"/>

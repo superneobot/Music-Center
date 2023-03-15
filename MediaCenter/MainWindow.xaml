@@ -13,6 +13,7 @@
         xmlns:speccontrols="clr-namespace:MediaCenter.SpectrumAnalizer.Controls"
         xmlns:local="clr-namespace:MediaCenter" 
         xmlns:databinding="clr-namespace:MediaCenter.Model" 
+        xmlns:tray="http://www.hardcodet.net/taskbar"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         x:Class="MediaCenter.MainWindow"
         mc:Ignorable="d"
@@ -66,7 +67,7 @@
                 <ThumbButtonInfo x:Name="thumb_next" Description="Следующий" ImageSource="{StaticResource next_thumb}" Command="{Binding PlayNext}"/>
             </TaskbarItemInfo.ThumbButtonInfos>
         </TaskbarItemInfo>
-    </controls:BlurryWindow.TaskbarItemInfo>
+    </controls:BlurryWindow.TaskbarItemInfo>     
     <Border x:Name="main_border" MouseDown="Border_MouseDown" Background="Transparent" Opacity="1" BorderThickness="1" BorderBrush="#333">
         <Grid x:Name="main_grid" MouseDown="Border_MouseDown">
             <Grid.RowDefinitions>
@@ -273,40 +274,34 @@
                     </Grid>
                 </Grid>
             </DockPanel>
-            <DockPanel Grid.Row="2" x:Name="single_poster" Height="0" Background="{Binding WindowColorStyle}">
-                <Button Style="{StaticResource MenuButton}"
-                        Visibility="Collapsed"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top">
-                    <Image Source="{StaticResource back_a}" Width="40" Height="24"/>
-                    <Button.Triggers>
-                        <EventTrigger RoutedEvent="Button.Click">
-                            <BeginStoryboard Storyboard="{StaticResource single_playlist_mode}" />
-                        </EventTrigger>
-                    </Button.Triggers>
-                </Button>
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">                      
-                        <Image Height="400" Width="400" Style="{StaticResource poster}" >
+            <DockPanel Grid.Row="2" x:Name="single_poster" Height="0" Background="{Binding WindowColorStyle}">                   
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="Auto" Width="1400" Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="400" />
+                        <RowDefinition Height="60" />
+                        <RowDefinition Height="200"/>
+                    </Grid.RowDefinitions>
+                    <Image Grid.Row="0" Height="400" Width="400" Style="{StaticResource poster}" >
                             <Image.Effect>
                                 <DropShadowEffect BlurRadius="35" ShadowDepth="1" Direction="30" />
-                            </Image.Effect>                             
-                        </Image>
-                    <StackPanel Orientation="Horizontal" Width="Auto" HorizontalAlignment="Center">
+                        </Image.Effect>                             
+                    </Image>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Width="Auto" HorizontalAlignment="Center" Background="Transparent">
                         <StackPanel Orientation="Vertical" Margin="10">
-                            <TextBlock Text="{Binding PlayingMusic.Artist}" Style="{StaticResource Time}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding PlayingMusic.Title}" Style="{StaticResource Time}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding PlayingMusic.Artist}" Style="{StaticResource Artist}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding PlayingMusic.Title}" Style="{StaticResource Title}" HorizontalAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Button Style="{StaticResource AddToFavPlaying}" Command="{Binding AddToFavoriteListPlayingMusic}"/>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="25 0">
-                        <Grid x:Name="Spectrum" Height="100">
-                            <TextBlock Text="{Binding CurrentAudioDevice.FriendlyName}"
+                    <StackPanel Grid.Row="2" Orientation="Vertical" Margin="25,0" Background="Transparent" VerticalAlignment="Center"  HorizontalAlignment="Center">
+                        <Grid x:Name="Spectrum" Height="50" VerticalAlignment="Bottom">
+                            <!--<TextBlock Text="{Binding CurrentAudioDevice.FriendlyName}"
                                Foreground="{StaticResource ForegroundPitched}"
                                FontFamily="Segoe UI Light" FontSize="50"
                                Opacity="{StaticResource ShadowOpacity}"
-                               HorizontalAlignment="Right"/>
+                               HorizontalAlignment="Right"/>-->
                             <speccontrols:AudioSpectrum PitchColor="{StaticResource PitchColor}"
                                             ForegroundPitched="{StaticResource ForegroundPitched}"
                                             Foreground="{StaticResource Foreground}"
@@ -319,8 +314,8 @@
                                             SpeedRaising="{StaticResource ActualRaising}"
                                             SpeedDropping="{StaticResource ActualDropping}"/>
                         </Grid>
-                        <Grid x:Name="Reflection" Height="70" RenderTransformOrigin="0.5 0.5">
-                            <Grid.Effect>
+                        <Grid x:Name="Reflection" Height="30" RenderTransformOrigin="0.5 0.5">
+                            <!--<Grid.Effect>
                                 <BlurEffect Radius="10" KernelType="Gaussian" RenderingBias="Performance"/>
                             </Grid.Effect>
                             <Grid.RenderTransform>
@@ -342,10 +337,10 @@
                                             ForegroundPitched="{StaticResource ForegroundPitched}"
                                             Foreground="{StaticResource Foreground}"
                                             SpeedRaising="{StaticResource ActualRaising}"
-                                            SpeedDropping="{StaticResource ActualDropping}"/>
+                                            SpeedDropping="{StaticResource ActualDropping}"/>-->
                         </Grid>
                     </StackPanel>
-                </StackPanel>
+                </Grid>
             </DockPanel>
             <DockPanel Grid.Row="3" x:Name="seeker_panel" Background="Transparent">
                 <Grid>
@@ -523,7 +518,8 @@
                     </DockPanel>
                 </Grid>
             </DockPanel>
-        </Grid>           
+        </Grid>
+        
     </Border>
     
 </controls:BlurryWindow>

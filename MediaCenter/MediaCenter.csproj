@@ -65,7 +65,7 @@
     </StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>music-square-2-svgrepo-com.ico</ApplicationIcon>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>EA9A2FFF5EB30ECFA2AB655B09E785238A95F144</ManifestCertificateThumbprint>
@@ -329,6 +329,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="music-svgrepo-com.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="favicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
