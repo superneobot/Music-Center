@@ -57,6 +57,16 @@ namespace MediaCenter.ViewModel {
             }
         }
         private ObservableCollection<DataSource> _favoriteList;
+        private ObservableCollection<DataSource> _tempSearchList;
+        public ObservableCollection<DataSource> TempSearchList {
+            get {
+                return _tempSearchList;
+            }
+            set {
+                _tempSearchList = value;
+                OnPropertyChanged(nameof(TempSearchList));
+            }
+        }
         public ObservableCollection<DataSource> FavoriteList {
             get { return _favoriteList; }
             set {
@@ -485,6 +495,27 @@ namespace MediaCenter.ViewModel {
                 OnPropertyChanged(nameof(PlayingMusic));
             }
         }
+
+        private DataSource _prevMusic;
+        public DataSource PrevMusic {
+            get {
+                return _prevMusic;
+            }
+            set {
+                _prevMusic = value;
+                OnPropertyChanged(nameof(PrevMusic));
+            }
+        }
+        private DataSource _nextMusic;
+        public DataSource NextMusic {
+            get {
+                return _nextMusic;
+            }
+            set {
+                _nextMusic = value;
+                OnPropertyChanged(nameof(NextMusic));
+            }
+        }
         #endregion
 
         #region media_center_settings
@@ -647,7 +678,17 @@ namespace MediaCenter.ViewModel {
             }
         }
         private int _searchMax;
-        private int _history_index;
+        private int _historyIndex;
+        public int HistoryIndex {
+            get {
+                return _historyIndex;
+            }
+            set {
+                _historyIndex = value;
+                OnPropertyChanged(nameof(HistoryIndex));
+            }
+        }
+
         private DataSource download_file;
         private bool _sideMenuWidth;
         public bool SideMenuWidth {
@@ -714,7 +755,7 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand<ObservableCollection<DataSource>>((e) => {
                     Content = new ItemsControl();
-                    Content.ItemsSource = SearchList;
+                    Content.ItemsSource = TempSearchList;
                     State = "Поиск треков";
                     CenterState = CenterState.Search;
                     ClearVisible = Visibility.Visible;
@@ -722,7 +763,7 @@ namespace MediaCenter.ViewModel {
                     BackVisible = Visibility.Collapsed;
                     ReturnVisible = Visibility.Collapsed;
                     LVOrientation = System.Windows.Controls.Orientation.Vertical;
-                    Check(SearchList, PlayingMusic);
+                    Check(CurrentPlayList, PlayingMusic);
                 });
             }
         }
@@ -793,6 +834,7 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand((e) => {
                     Content = new ItemsControl();
+                    
                     GetUserCharts();
                     Content.ItemsSource = UsersChart;
                     State = "Свои чарты";
@@ -898,7 +940,7 @@ namespace MediaCenter.ViewModel {
                         }
                     }
                     if (CenterState == CenterState.Search) {
-                        SearchList.Clear();
+                        TempSearchList.Clear();
                     }
                 });
             }
@@ -908,41 +950,45 @@ namespace MediaCenter.ViewModel {
                 return new RelayCommand(item => {
                     if (CenterState == CenterState.Playlist) {
                         CurrentPlayList = MusicFiles;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, MusicFiles);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
 
                     }
                     if (CenterState == CenterState.Downloaded) {
                         CurrentPlayList = DownloadedFiles;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, DownloadedFiles);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.Search) {
+                        SearchList.Clear();
+                        foreach (var file in TempSearchList) {
+                            SearchList.Add(file);
+                        }
                         CurrentPlayList = SearchList;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, SearchList);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
 
                     }
                     if (CenterState == CenterState.Favorite) {
                         CurrentPlayList = FavoriteList;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, FavoriteList);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
 
                     }
                     if (CenterState == CenterState.Collections) {
                         CurrentPlayList = ParsedCollection;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, ParsedCollection);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.Radio) {
                         CurrentPlayList = RadioList;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, RadioCollection);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.UsersChart) {
                         CurrentPlayList = UsersChartPlayList;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, UsersChartPlayList);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                 });
             }
@@ -951,39 +997,43 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand(item => {
                     if (CenterState == CenterState.Playlist) {
-                        Play(SelectedMusic, MusicFiles);
-                        _history_index = SelectedMusicIndex;
+                        HistoryIndex = SelectedMusicIndex;
                         CurrentPlayList = MusicFiles;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.Downloaded) {
-                        Play(SelectedMusic, DownloadedFiles);
-                        _history_index = SelectedMusicIndex;
+                        HistoryIndex = SelectedMusicIndex;
                         CurrentPlayList = DownloadedFiles;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.Search) {
-                        Play(SelectedMusic, SearchList);
-                        _history_index = SelectedMusicIndex;
+                        SearchList.Clear();
+                        foreach (var file in TempSearchList) {
+                            SearchList.Add(file);
+                        }
+                        HistoryIndex = SelectedMusicIndex;
                         CurrentPlayList = SearchList;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.Favorite) {
-                        Play(SelectedMusic, FavoriteList);
-                        _history_index = SelectedMusicIndex;
+                        HistoryIndex = SelectedMusicIndex;
                         CurrentPlayList = FavoriteList;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.Collections) {
-                        Play(SelectedMusic, ParsedCollection);
-                        _history_index = SelectedMusicIndex;
+                        HistoryIndex = SelectedMusicIndex;
                         CurrentPlayList = ParsedCollection;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.Radio) {
                         CurrentPlayList = RadioList;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, RadioCollection);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                     if (CenterState == CenterState.UsersChart) {
                         CurrentPlayList = UsersChartPlayList;
-                        _history_index = SelectedMusicIndex;
-                        Play(SelectedMusic, UsersChartPlayList);
+                        HistoryIndex = SelectedMusicIndex;
+                        Play(SelectedMusic, CurrentPlayList);
                     }
                 });
             }
@@ -999,12 +1049,12 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand((e) => {
                     if (CurrentPlayList.Count > 0) {
-                        _history_index = SelectedMusicIndex;
-                        if (SelectedMusicIndex == CurrentPlayList.Count - 1)
-                            SelectedMusicIndex = 0;
+                        //_history_index = SelectedMusicIndex;
+                        if (HistoryIndex == CurrentPlayList.Count - 1)
+                            HistoryIndex = 0;
                         else
-                            SelectedMusicIndex++;
-                        var file = CurrentPlayList[SelectedMusicIndex];
+                            HistoryIndex++;
+                        var file = CurrentPlayList[HistoryIndex];
                         Play(file, CurrentPlayList);
 
                     }
@@ -1015,13 +1065,13 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand((e) => {
                     // if (_history_index != 0)
-                    if (SelectedMusicIndex != 0)
-                        SelectedMusicIndex--;
+                    if (HistoryIndex != 0)
+                        HistoryIndex--;
                     else
-                        SelectedMusicIndex = CurrentPlayList.Count - 1;
+                        HistoryIndex = CurrentPlayList.Count - 1;
                     //else
                     //     SelectedMusicIndex = CurrentPlayList.Count - 1; ;
-                    var file = CurrentPlayList[SelectedMusicIndex];
+                    var file = CurrentPlayList[HistoryIndex];
                     Play(file, CurrentPlayList);
                 });
             }
@@ -1157,10 +1207,11 @@ namespace MediaCenter.ViewModel {
         public ICommand PlayRadio {
             get {
                 return new RelayCommand(e => {
-                    Play(SelectedMusic, RadioCollection);
                     // SelectedMusic.IsPlay= true;
                     CurrentPlayList = RadioCollection;
-                    Check(RadioCollection, PlayingMusic);
+                    HistoryIndex = SelectedMusicIndex;
+                    Play(SelectedMusic, CurrentPlayList);
+                    Check(CurrentPlayList, PlayingMusic);
                 });
             }
         }
@@ -1212,7 +1263,7 @@ namespace MediaCenter.ViewModel {
             var username = System.Environment.UserName;
             var file = JsonConvert.SerializeObject(FavoriteList, Formatting.Indented);
             System.IO.File.WriteAllText(Environment.CurrentDirectory + @"/favorite.data", file, System.Text.Encoding.UTF8);
-            UploadFiles($"ftp://77.222.40.224//Database/{username}/", Environment.CurrentDirectory + @"/favorite.data");
+            UploadFiles($"ftp://77.222.40.224/public_html/playlist/database/{username}/", Environment.CurrentDirectory + @"/favorite.data");
         }
         public void UploadFiles(string address, string file) {
             var username = System.Environment.UserName;
@@ -1229,7 +1280,7 @@ namespace MediaCenter.ViewModel {
             try {
                 using (WebClient client = new WebClient()) {
                     client.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
-                    var data = client.DownloadString(new Uri($"ftp://77.222.40.224//Database/{username}/favorite.data"));
+                    var data = client.DownloadString(new Uri($"ftp://77.222.40.224/public_html/playlist/database/{username}/favorite.data"));
                     FavoriteList = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
                 }
             } catch { }
@@ -1288,7 +1339,7 @@ namespace MediaCenter.ViewModel {
         }
         public void NextTrack() {
             if (CurrentPlayList.Count > 0) {
-                _history_index = SelectedMusicIndex;
+                HistoryIndex = SelectedMusicIndex;
                 if (SelectedMusicIndex == CurrentPlayList.Count - 1)
                     SelectedMusicIndex = 0;
                 else
@@ -1299,13 +1350,13 @@ namespace MediaCenter.ViewModel {
             }
         }
         public void PrevTrack() {
-            if (_history_index != 0)
+            if (HistoryIndex != 0)
                 if (SelectedMusicIndex == CurrentPlayList.Count - 1)
                     SelectedMusicIndex--;
                 else
                     SelectedMusicIndex = CurrentPlayList.Count - 1;
             else
-                SelectedMusicIndex = _history_index;
+                SelectedMusicIndex = HistoryIndex;
             var file = CurrentPlayList[SelectedMusicIndex];
             Play(file, CurrentPlayList);
         }
@@ -1475,7 +1526,7 @@ namespace MediaCenter.ViewModel {
                 await Player.Resume();
                 ThumbPlayText = "Пауза";
                 PlayText = "Пауза";
-                PlayBtn = "/Resources/pause.png";
+                //PlayBtn = "/Resources/pause.png";
                 IsPlay = true;
                 PlayingMusic.IsPlay = true;
                 PlayingMusic.IsPaused = false;
@@ -1485,7 +1536,7 @@ namespace MediaCenter.ViewModel {
                 file.IsPaused = false;
                 //if (CenterState == CenterState.Playlist | CenterState == CenterState.Downloaded) {
                 await Player.Play(file.FilePath);
-                PlayBtn = "/Resources/pause.png";
+                //PlayBtn = "/Resources/pause.png";
                 PlayText = "Пауза";
                 ThumbPlayText = "Пауза";
                 Duration = Player?.getTotalTimeString();
@@ -1501,7 +1552,7 @@ namespace MediaCenter.ViewModel {
 
         }
         private async void FindMusic(string text) {
-            SearchList.Clear();
+            TempSearchList.Clear();
             await GetPages(text);
             SearchProgress = 0;
             SearchMax = _allpages / 48;
@@ -1510,7 +1561,7 @@ namespace MediaCenter.ViewModel {
                 SearchProgress++;
             }
             Content = new ItemsControl();
-            Content.ItemsSource = SearchList;
+            Content.ItemsSource = TempSearchList;
             State = "Поиск треков";
             CenterState = CenterState.Search;
             ClearVisible = Visibility.Visible;
@@ -1518,7 +1569,7 @@ namespace MediaCenter.ViewModel {
             BackVisible = Visibility.Collapsed;
             ReturnVisible = Visibility.Collapsed;
             LVOrientation = System.Windows.Controls.Orientation.Vertical;
-            Check(SearchList, PlayingMusic);
+            Check(TempSearchList, PlayingMusic);
         }
         private async Task FindMusic(int page, string search_text) {
             var config = Configuration.Default.WithDefaultLoader();
@@ -1542,8 +1593,9 @@ namespace MediaCenter.ViewModel {
                         var image_url_small = "https://ru.hitmotop.com" + image_a.Replace("background-image: url('", " ").Replace("');", " ").Trim();
                         var atime = item.QuerySelector("div[class='track__info-r']");
                         var time = atime.QuerySelector("div[class='track__fulltime']").TextContent;
-                        var file = new DataSource(title, artist, "", image_url_small, time, link, Location.Internet);
-                        SearchList.Add(file);
+                        var id = Path.GetFileNameWithoutExtension(image_url_small);
+                        var file = new DataSource(title, artist, "", image_url_small, time, link, id, Location.Internet);
+                        TempSearchList.Add(file);
                     }
                 } else {
                     System.Windows.MessageBox.Show("Ничего не найдено");
@@ -1623,7 +1675,8 @@ namespace MediaCenter.ViewModel {
                         var image_url_small = "https://ru.hitmotop.com" + image_a.Replace("background-image: url('", " ").Replace("');", " ").Trim();
                         var atime = item.QuerySelector("div[class='track__info-r']");
                         var time = atime.QuerySelector("div[class='track__fulltime']").TextContent;
-                        var file = new DataSource(title, artist, "", image_url_small, time, link, Location.Internet);
+                        var id = Path.GetFileNameWithoutExtension(image_url_small);
+                        var file = new DataSource(title, artist, "", image_url_small, time, link, id, Location.Internet);
                         ParsedCollection.Add(file);
                     }
                 } else {
@@ -1671,41 +1724,65 @@ namespace MediaCenter.ViewModel {
         }
         private Task DownloadDatabase() {
             NetworkCredential credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
-           // string url = "ftp://77.222.40.224/Database/";
+            // string url = "ftp://77.222.40.224/Database/";
 
-            Loader.DownloadFile(Path.Combine(Environment.CurrentDirectory, "Database"), "/Database/", "kalkyneogm_admin", "Sneo2352816botS");
+            Loader.DownloadFile(Path.Combine(Environment.CurrentDirectory, "Database"), "ftp://77.222.40.224/Database/", "kalkyneogm_admin", "Sneo2352816botS");
 
             return Task.CompletedTask;
         }
-        private void GetUserCharts() {
+        private Task GetUserCharts() {
             UsersChart.Clear();
+            UsersChartPlayList.Clear();
+            //await ClearDatabase();
+            //await DownloadDatabase();
+            //Task.Factory.StartNew(() => {
             var ext_avatar = ".png";
             var ext_list = ".data";
             DirectoryInfo dir = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, @"Database"));
             FileInfo[] files = dir.GetFiles("*", SearchOption.AllDirectories);
             var f = dir.GetDirectories();
-            foreach (var file in f) {
-                DirectoryInfo folder = file;
-                FileInfo[] avatars = folder.GetFiles("*" + ext_avatar, SearchOption.AllDirectories);
-                FileInfo[] fav_lists = folder.GetFiles("*" + ext_list, SearchOption.AllDirectories);
-                var ava = "";
-                var path = "";
-                ObservableCollection<DataSource> temp = new ObservableCollection<DataSource>();
-                foreach (var item in avatars) {
-                    ava = item.FullName;
+            try {
+                foreach (var file in f) {
+                    DirectoryInfo folder = file;
+                    FileInfo[] avatars = folder.GetFiles("*" + ext_avatar, SearchOption.AllDirectories);
+                    FileInfo[] fav_lists = folder.GetFiles("*" + ext_list, SearchOption.AllDirectories);
+                    var ava = "";
+                    var path = "";
+                    ObservableCollection<DataSource> temp = new ObservableCollection<DataSource>();
+                    foreach (var item in avatars) {
+                        ava = item.FullName;
+                    }
+                    foreach (var item in fav_lists) {
+                        path = item.FullName;
+                        var data = System.IO.File.ReadAllText(path);
+                        temp = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
+                    }
+                    //UsersFavorite.Add(new Collection(folder.Name, ava, temp));
+                    UsersChart.Add(new DataSource(folder.Name, ava, path, SourceType.Users));
                 }
-                foreach (var item in fav_lists) {
-                    path = item.FullName;
-                    var data = System.IO.File.ReadAllText(path);
-                    temp = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
-                }
-                //UsersFavorite.Add(new Collection(folder.Name, ava, temp));
-                UsersChart.Add(new DataSource(folder.Name, ava, path, SourceType.Users));
 
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message);
             }
-
+            //  });
+            return Task.CompletedTask;
         }
-        private void GetUsersChartPlaylist(string path) {
+
+        private Task ClearDatabase() {
+            Task.Factory.StartNew(() => {
+                var database = Path.Combine(Environment.CurrentDirectory, @"Database");
+                DirectoryInfo dirr = new DirectoryInfo(database);
+                foreach (var file in dirr.GetDirectories()) {
+                    file.Delete(true);
+                }
+            });
+            return Task.CompletedTask;
+        }
+
+        private async void GetUsersChartPlaylist(string path) {
+            UsersChartPlayList.Clear();
+            await DownloadDatabase();
+            await GetUserCharts();
             var data = System.IO.File.ReadAllText(path);
             UsersChartPlayList = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
             foreach (var item in UsersChartPlayList) {
@@ -1734,10 +1811,10 @@ namespace MediaCenter.ViewModel {
         }
         private void CreateFtpPath() {
             var username = Environment.UserName;
-            if (DirectoryExists($"ftp://77.222.40.224//Database/{username}/")) {
+            if (DirectoryExists($"ftp://77.222.40.224/public_html/playlist/database/{username}/")) {
 
             } else {
-                FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create($"ftp://77.222.40.224//Database/{username}/");
+                FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create($"ftp://77.222.40.224/public_html/playlist/database/{username}/");
                 request.Method = WebRequestMethods.Ftp.MakeDirectory;
                 request.UseBinary = true;
                 request.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
@@ -1755,6 +1832,7 @@ namespace MediaCenter.ViewModel {
             MusicFiles = new ObservableCollection<DataSource>();
             DownloadedFiles = new ObservableCollection<DataSource>();
             SearchList = new ObservableCollection<DataSource>();
+            TempSearchList = new ObservableCollection<DataSource>();
             FavoriteList = new ObservableCollection<DataSource>();
             RadioList = new ObservableCollection<DataSource>();
             Collections = new ObservableCollection<DataSource>();
@@ -1762,6 +1840,7 @@ namespace MediaCenter.ViewModel {
             RadioCollection = new ObservableCollection<DataSource>();
             UsersFavorite = new ObservableCollection<Collection>();
             UsersChart = new ObservableCollection<DataSource>();
+            UsersChartPlayList = new ObservableCollection<DataSource>();
             Update(DownloadedFiles);
             LoadFavoriteList();
             if (System.IO.File.Exists(AppContext.BaseDirectory + "radio.json")) {
@@ -1790,7 +1869,7 @@ namespace MediaCenter.ViewModel {
                 Version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
             //
             Timer = new DispatcherTimer(DispatcherPriority.Background);
-            Timer.Interval = new TimeSpan(0, 0, 0, 1, 0);
+            Timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             Timer.Tick += delegate {
                 if (Player.State == NAudio.Wave.PlaybackState.Playing)
                     Time = Player.getPositionString();
@@ -1798,13 +1877,26 @@ namespace MediaCenter.ViewModel {
                 PageTitle = $"{Player.State}";
                 if (Player.State == NAudio.Wave.PlaybackState.Stopped & IsPlay) {
                     if (CurrentPlayList.Count > 0) {
-                        if (SelectedMusicIndex == CurrentPlayList.Count - 1)
-                            SelectedMusicIndex = 0;
+                        if (HistoryIndex == CurrentPlayList.Count - 1)
+                            HistoryIndex = 0;
                         else
-                            SelectedMusicIndex++;
-                        var file = CurrentPlayList[SelectedMusicIndex];
+                            HistoryIndex++;
+                        var file = CurrentPlayList[HistoryIndex];
                         Play(file, CurrentPlayList);
+
                     }
+                }
+                if (HistoryIndex != 0 & CurrentPlayList.Count != 0) {
+                    var prev = HistoryIndex - 1;
+                    PrevMusic = CurrentPlayList[prev];
+                } else {
+                    PrevMusic = null;
+                }
+                if (HistoryIndex != CurrentPlayList.Count - 1) {
+                    var next = HistoryIndex + 1;
+                    NextMusic = CurrentPlayList[next];
+                } else {
+                    NextMusic = null;
                 }
             };
         }

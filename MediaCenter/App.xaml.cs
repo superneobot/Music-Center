@@ -32,11 +32,11 @@ namespace MediaCenter {
                     Directory.CreateDirectory(path);
                 }
                 if (Directory.Exists(database)) {
-                    //DirectoryInfo dir = new DirectoryInfo(database);
+                    DirectoryInfo dir = new DirectoryInfo(database);
                     //foreach (var file in dir.GetDirectories()) {
                     //    file.Delete(true);
                     //}
-                    //Directory.CreateDirectory(database);
+                    Directory.CreateDirectory(database);
                 } else {
                     Directory.CreateDirectory(database);
                 }

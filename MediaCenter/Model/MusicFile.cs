@@ -11,6 +11,15 @@ public enum SourceType {
 namespace MediaCenter.Model {
     [Serializable]
     public class DataSource : ViewModelBase {
+        [JsonProperty("ID")]
+        private string _id;
+        public string Id {
+            get { return _id; }
+            set {
+                _id = value;
+                OnPropertyChanged(nameof(Id));
+            }
+        }
         [JsonProperty("SourceType")]
         private SourceType _type;
         public SourceType Type {
@@ -234,16 +243,16 @@ namespace MediaCenter.Model {
         /// <param name="poster">Постер</param>
         /// <param name="duration">Длительность</param>
         /// <param name="source">Путь к файлу (внешний)</param>
-        /// <param name="url">Путь к странице с файлом</param>
+        /// <param name="id">Id файла</param>
         /// <param name="location">Расположение файла</param>
-        public DataSource(string title, string artist, string album, string poster, string duration, string source, Location location) {
+        public DataSource(string title, string artist, string album, string poster, string duration, string source, string id, Location location) {
             _title = title;
             _artist = artist;
             _album = album;
             _poster = poster;
             _duration = duration;
             _filePath = source;
-            // _url = url;
+            _id = id;
             _location = location;
             Type = SourceType.Music;
             LocalFile = false;
@@ -330,7 +339,7 @@ namespace MediaCenter.Model {
         public override bool Equals(object obj) {
             var item = obj as DataSource;
             if (item == null) return false;
-            if(item.FilePath == this.FilePath)
+            if (item.FilePath == this.FilePath)
                 return true;
             return base.Equals(obj);
         }

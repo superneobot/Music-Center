@@ -1,0 +1,38 @@
+﻿[
+  {
+    "SourceType": 0,
+    "Type": 0,
+    "Title": "Бэнгер",
+    "Artist": "Feduk",
+    "Album": "",
+    "Poster": "https://ru.hitmotop.com/cover/284/c1f/16057.jpg",
+    "Duration": "03:05",
+    "FilePath": "https://ru.hitmotop.com/get/music/20210710/Feduk_-_Bjenger_73039234.mp3",
+    "Source": null,
+    "URL": null,
+    "Liked": true,
+    "IsPlay": false,
+    "IsPaused": false,
+    "Location": 2,
+    "Download": false,
+    "LocalFile": false
+  },
+  {
+    "SourceType": 0,
+    "Type": 0,
+    "Title": "3-е Сентября",
+    "Artist": "ЕГОР КРИД",
+    "Album": "",
+    "Poster": "https://ru.hitmotop.com/covers/a/8fa/819/738422.jpg",
+    "Duration": "03:00",
+    "FilePath": "https://ru.hitmotop.com/get/music/20220902/EGOR_KRID_-_3-e_Sentyabrya_74680760.mp3",
+    "Source": null,
+    "URL": null,
+    "Liked": true,
+    "IsPlay": true,
+    "IsPaused": false,
+    "Location": 2,
+    "Download": false,
+    "LocalFile": false
+  }
+]

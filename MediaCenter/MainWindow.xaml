@@ -68,8 +68,11 @@
             </TaskbarItemInfo.ThumbButtonInfos>
         </TaskbarItemInfo>
     </controls:BlurryWindow.TaskbarItemInfo>     
-    <Border x:Name="main_border" MouseDown="Border_MouseDown" Background="Transparent" Opacity="1" BorderThickness="1" BorderBrush="#333">
-        <Grid x:Name="main_grid" MouseDown="Border_MouseDown">
+    <Border x:Name="main_border" MouseDown="Border_MouseDown" Opacity="1" BorderThickness="1" BorderBrush="#333">
+        <Border.Background>
+            <ImageBrush ImageSource="{StaticResource back}" Opacity="0.2" Stretch="None" />
+        </Border.Background>
+        <Grid x:Name="main_grid" MouseDown="Border_MouseDown" SnapsToDevicePixels="True" ShowGridLines="False">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32" />
                 <RowDefinition Height="Auto"/>
@@ -86,25 +89,21 @@
                         <ColumnDefinition Width="32"/>
                     </Grid.ColumnDefinitions>
                     <Image Grid.Column="0" Width="32" Source="{StaticResource logo}" Opacity="0.9" Visibility="Visible"/>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">                          
-                        <TextBlock Text="Music Center" Style="{StaticResource Time}" Margin="2,0,0,0" Width="100" HorizontalAlignment="Left">
-                        <TextBlock.Effect>
-                            <DropShadowEffect BlurRadius="10" ShadowDepth="3" Direction="270" />
-                        </TextBlock.Effect>
-                    </TextBlock>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBlock Text="Music Center" Style="{StaticResource Time}" Margin="2,0,0,0" Width="100" HorizontalAlignment="Left"/>
                     </StackPanel>
                     <CheckBox Grid.Column="2" Command="{Binding MakeTopMost}" Style="{StaticResource TopMostCheck}" VerticalAlignment="Center" HorizontalAlignment="Center"/>                     
                     <Button Grid.Column="3" Command="{Binding Exit}" Content="X" Style="{StaticResource SystemButtons}" Width="24" Height="24" Visibility="Visible"/>
                 </Grid>
             </DockPanel>
             <DockPanel Grid.Row="1" x:Name="center_panel" Height="700" Background="{Binding WindowColorStyle}">
-                <Grid x:Name="center_grid">
+                <Grid x:Name="center_grid" SnapsToDevicePixels="True" ShowGridLines="False">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" x:Name="side_menu"/>
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <DockPanel Grid.Column="0" Width="200" x:Name="main_menu_panel">
-                        <Grid>
+                        <Grid SnapsToDevicePixels="True" ShowGridLines="False">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"/>
                                 <RowDefinition Height="48"/>
@@ -189,7 +188,7 @@
                         </Grid>
                     </DockPanel>
 
-                    <Grid Grid.Column="1" x:Name="play_list_grid">
+                    <Grid Grid.Column="1" x:Name="play_list_grid" SnapsToDevicePixels="True" ShowGridLines="False">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="48"/>
                             <RowDefinition Height="42"/>
@@ -205,11 +204,11 @@
                                 </TextBox.InputBindings>
                             </TextBox>
                         </DockPanel>
-                        <Border Grid.Row="1" Padding="4" Background="Transparent">
-                            <Grid>
+                        <Border Grid.Row="1" Padding="4" Background="Transparent" Width="1200">
+                            <Grid SnapsToDevicePixels="True" ShowGridLines="False">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="50" />
                                     <ColumnDefinition Width="1*" />
                                     <ColumnDefinition Width="1*" />
                                 </Grid.ColumnDefinitions>
@@ -219,7 +218,7 @@
                                     </TextBlock.Effect>
                                 </TextBlock>
                                 <DockPanel Grid.Column="1" Width="Auto">
-                                    <Border Margin="15,0,0,0" BorderBrush="WhiteSmoke" BorderThickness="0" Height="32" CornerRadius="4" Width="Auto" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Border Margin="0,0,0,0" BorderBrush="WhiteSmoke" BorderThickness="0" Height="32" CornerRadius="4" Width="Auto" VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <TextBlock Foreground="GhostWhite" Margin="5" HorizontalAlignment="Center"
                                            FontSize="20" Style="{StaticResource Time}"
                                            Text="{Binding Content.ItemsSource.Count}">
@@ -246,7 +245,7 @@
                                 </StackPanel>
                             </Grid>
                         </Border>
-                        <DockPanel Grid.Row="2" Background="Transparent" Opacity="1" Visibility="Visible">
+                        <DockPanel Grid.Row="2" Background="Transparent" SnapsToDevicePixels="True" Opacity="1" Visibility="Visible">
                             <ListView Style="{StaticResource PlayList}"
                                   x:Name="LV" 
                                   SelectionChanged="LV_SelectionChanged">
@@ -275,17 +274,52 @@
                 </Grid>
             </DockPanel>
             <DockPanel Grid.Row="2" x:Name="single_poster" Height="0" Background="{Binding WindowColorStyle}">                   
-                <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="Auto" Width="1400" Background="Transparent">
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="Auto" Width="1400" Background="Transparent" SnapsToDevicePixels="True" ShowGridLines="False">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="400" />
+                        <RowDefinition Height="550" />
                         <RowDefinition Height="60" />
                         <RowDefinition Height="200"/>
                     </Grid.RowDefinitions>
-                    <Image Grid.Row="0" Height="400" Width="400" Style="{StaticResource poster}" >
+                    <Grid Grid.Row="0" ShowGridLines="False" SnapsToDevicePixels="True" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="320"/>
+                            <ColumnDefinition Width="400"/>
+                            <ColumnDefinition Width="320"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel  Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
+                            <Image x:Name="prev_music" Width="300" Style="{StaticResource prev_poster}">
+                                <Image.Effect>
+                                    <DropShadowEffect BlurRadius="35" ShadowDepth="1" Direction="30" />
+                                </Image.Effect>
+                            </Image>
+                            <StackPanel Orientation="Vertical" Margin="10">
+                                <TextBlock Text="{Binding PrevMusic.Artist}" Style="{StaticResource Artist}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding PrevMusic.Title}" Style="{StaticResource Title}" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <StackPanel.Effect>
+                                <BlurEffect Radius="5" />
+                            </StackPanel.Effect>
+                        </StackPanel>
+                        <Image Grid.Column="1" x:Name="current_playing_music" Height="400" Width="400" Style="{StaticResource poster}" VerticalAlignment="Center" >
                             <Image.Effect>
                                 <DropShadowEffect BlurRadius="35" ShadowDepth="1" Direction="30" />
-                        </Image.Effect>                             
-                    </Image>
+                            </Image.Effect>                             
+                        </Image>
+                        <StackPanel  Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">
+                            <Image x:Name="next_music" Width="300" Style="{StaticResource next_poster}">
+                                <Image.Effect>
+                                    <DropShadowEffect BlurRadius="35" ShadowDepth="1" Direction="30" />
+                                </Image.Effect>
+                            </Image>
+                            <StackPanel Orientation="Vertical" Margin="10">
+                                <TextBlock Text="{Binding NextMusic.Artist}" Style="{StaticResource Artist}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding NextMusic.Title}" Style="{StaticResource Title}" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <StackPanel.Effect>
+                                <BlurEffect Radius="5" />
+                            </StackPanel.Effect>
+                        </StackPanel>
+                    </Grid>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Width="Auto" HorizontalAlignment="Center" Background="Transparent">
                         <StackPanel Orientation="Vertical" Margin="10">
                             <TextBlock Text="{Binding PlayingMusic.Artist}" Style="{StaticResource Artist}" HorizontalAlignment="Center"/>
@@ -302,7 +336,7 @@
                                FontFamily="Segoe UI Light" FontSize="50"
                                Opacity="{StaticResource ShadowOpacity}"
                                HorizontalAlignment="Right"/>-->
-                            <speccontrols:AudioSpectrum PitchColor="{StaticResource PitchColor}"
+                            <!--<speccontrols:AudioSpectrum PitchColor="{StaticResource PitchColor}"
                                             ForegroundPitched="{StaticResource ForegroundPitched}"
                                             Foreground="{StaticResource Foreground}"
                                             SpeedRaising="{StaticResource ShadowRaising}"
@@ -312,7 +346,7 @@
                                             ForegroundPitched="{StaticResource ForegroundPitched}"
                                             Foreground="{StaticResource Foreground}"
                                             SpeedRaising="{StaticResource ActualRaising}"
-                                            SpeedDropping="{StaticResource ActualDropping}"/>
+                                            SpeedDropping="{StaticResource ActualDropping}"/>-->
                         </Grid>
                         <Grid x:Name="Reflection" Height="30" RenderTransformOrigin="0.5 0.5">
                             <!--<Grid.Effect>
@@ -420,11 +454,13 @@
                                 <ColumnDefinition Width="120"/>
                             </Grid.ColumnDefinitions>
                             <CheckBox x:Name="poster_check" Style="{StaticResource song_panel_poster_check}" Width="40" Height="40" Click="CheckBox_Click">
-                                <Image Grid.Column="0" x:Name="song_panel_poster_image" Style="{StaticResource poster}" Width="40" Height="40" VerticalAlignment="Center">
-                                    <Image.Effect>
+                                <Border Background="Transparent" BorderBrush="#222" BorderThickness="1">
+                                    <Image Grid.Column="0" x:Name="song_panel_poster_image" Style="{StaticResource poster}" Width="40" Height="40" VerticalAlignment="Center">
+                                        <!--<Image.Effect>
                                         <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" />
-                                    </Image.Effect>
-                                </Image>                                   
+                                    </Image.Effect>-->
+                                    </Image>
+                                </Border>
                                 <CheckBox.Triggers>
                                     <EventTrigger RoutedEvent="CheckBox.Checked">
                                         <BeginStoryboard Storyboard="{StaticResource single_poster_mode}" />
@@ -442,14 +478,14 @@
                                     <RowDefinition Height="20" />
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Style="{StaticResource Artist}" Text="{Binding PlayingMusic.Artist}">
-                                    <TextBlock.Effect>
+                                    <!--<TextBlock.Effect>
                                         <DropShadowEffect BlurRadius="5" ShadowDepth="1" Direction="270" />
-                                    </TextBlock.Effect>
+                                    </TextBlock.Effect>-->
                                 </TextBlock>
                                 <TextBlock Grid.Row="1" Style="{StaticResource Title}" Text="{Binding PlayingMusic.Title}">
-                                    <TextBlock.Effect>
+                                    <!--<TextBlock.Effect>
                                         <DropShadowEffect BlurRadius="5" ShadowDepth="1" Direction="270" />
-                                    </TextBlock.Effect>
+                                    </TextBlock.Effect>-->
                                 </TextBlock>
                             </Grid>
                             <DockPanel Grid.Column="2" Margin="10,0,0,0">
