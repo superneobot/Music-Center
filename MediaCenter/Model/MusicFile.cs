@@ -264,14 +264,14 @@ namespace MediaCenter.Model {
         /// <param name="id">Id файла</param>
         /// <param name="location">Расположение файла</param>
         public DataSource(string title, string artist, string album, string poster, string duration, string source, string id, Location location) {
-            _title = title;
-            _artist = artist;
-            _album = album;
-            _poster = poster;
-            _duration = duration;
-            _filePath = source;
-            _id = id;
-            _location = location;
+            Title = title;
+            Artist = artist;
+            Album = album;
+            Poster = poster;
+            Duration = duration;
+            FilePath = source;
+            Id = Guid.NewGuid().ToString();
+            Location = location;
             Type = SourceType.Music;
             LocalFile = false;
         }
