@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MediaCenter.SpectrumAnalizer.Models {
+namespace MediaCenter.Models {
     public partial class Avatar {
 
 

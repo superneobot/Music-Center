@@ -1,6 +1,7 @@
 ﻿using AngleSharp;
 using MediaCenter.Model;
-using MediaCenter.SpectrumAnalizer.Models;
+using MediaCenter.Models;
+using MediaCenter.Views;
 using MediaCenter.Views.enums;
 using Newtonsoft.Json;
 using System;
@@ -11,6 +12,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.FtpClient;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,6 +22,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Translit;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
+using Path = System.IO.Path;
 
 namespace MediaCenter.ViewModel {
     public class MainViewModel : ViewModelBase {
@@ -428,9 +436,91 @@ namespace MediaCenter.ViewModel {
                 OnPropertyChanged(nameof(PageTitle));
             }
         }
+
+        private double _compactLeft;
+        private double _compactTop;
+        public double CompactLeft {
+            get {
+                var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+                var left = desktopWorkingArea.Right - 270 - 50;
+                _compactLeft = left;
+                return _compactLeft;
+            }
+            set {
+                _compactLeft = value;
+                OnPropertyChanged(nameof(CompactLeft));
+            }
+        }
+        public double CompactTop {
+            get {
+                var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+                var top = desktopWorkingArea.Top + 50;
+                return _compactTop;
+            }
+            set {
+                _compactTop = value;
+                OnPropertyChanged(nameof(CompactTop));
+            }
+        }
         #endregion
 
         #region app_main_param
+        //
+        private string _avatar;
+        public string UserAvatar {
+            get {
+                var username = System.Environment.UserName;
+                var image = Avatar.GetUserTile(username);
+                image.Save("avatar.png");
+                _avatar = Path.Combine(Environment.CurrentDirectory, "avatar.png");
+                return _avatar;
+            }
+            set {
+                _avatar = value;
+                OnPropertyChanged(nameof(UserAvatar));
+            }
+        }
+        private User _authorizedUser;
+        public User AuthorizedUser {
+            get {
+                if (_authorizedUser == null) {
+                    _authorizedUser = new User();
+                    _authorizedUser.Login = System.Environment.UserName; ;
+                }
+                return _authorizedUser;
+
+            }
+            set {
+                _authorizedUser = value;
+                OnPropertyChanged(nameof(AuthorizedUser));
+            }
+        }
+        private string _username;
+        public string Username {
+            get {
+                var name = Environment.UserName;
+                TranslitMethods.Translitter trn = new TranslitMethods.Translitter();
+                var user = trn.Translit(name, TranslitMethods.TranslitType.Iso);
+                _username = user;
+                return _username;
+            }
+            set {
+                _username = value;
+                OnPropertyChanged(nameof(Username));
+            }
+        }
+        private string _displayUserName;
+        public string DisplayUserName {
+            get {
+                var name = Environment.UserName;
+                _displayUserName = name;
+                return _displayUserName;
+            }
+            set {
+                _displayUserName = value;
+                OnPropertyChanged(nameof(DisplayUserName));
+            }
+        }
         //
         public bool IsPlay = false;
         public Player Player;
@@ -522,6 +612,9 @@ namespace MediaCenter.ViewModel {
         private string _version;
         public string Version {
             get {
+                //_version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                    _version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
                 return _version;
             }
             set {
@@ -716,6 +809,18 @@ namespace MediaCenter.ViewModel {
         #endregion
 
         #region commands
+        public ICommand LogIn {
+            get {
+                return new RelayCommand(delegate (object o) {
+                    //if (AuthorizedUser.Login == "Войти") {
+                    //    AuthorizationInMediaCenter();
+                    //} else {
+                    //    LogoutAction();
+                    //}
+                    Process.Start($"https://mymusiccenter.ru/playlist/database/{Username}/index.php");
+                });
+            }
+        }
         public ICommand OpenPlayList {
             get {
                 return new RelayCommand<ObservableCollection<DataSource>>((e) => {
@@ -832,10 +937,9 @@ namespace MediaCenter.ViewModel {
         }
         public ICommand OpenWave {
             get {
-                return new RelayCommand((e) => {
+                return new RelayCommand(async (e) => {
                     Content = new ItemsControl();
-                    
-                    GetUserCharts();
+                    await GetUserCharts();
                     Content.ItemsSource = UsersChart;
                     State = "Свои чарты";
                     CenterState = CenterState.UsersChart;
@@ -903,6 +1007,7 @@ namespace MediaCenter.ViewModel {
             get {
                 return new RelayCommand<DataSource>((e) => {
                     var settings = new Views.Settings();
+                    settings.Owner = Application.Current.MainWindow;
                     var vm = System.Windows.Application.Current.Windows[0].DataContext;
                     settings.DataContext = vm;
                     settings.ShowDialog();
@@ -1226,8 +1331,6 @@ namespace MediaCenter.ViewModel {
                     CenterState = CenterState.UsersChart;
                     ClearVisible = Visibility.Collapsed;
                     OpenPathVisible = Visibility.Collapsed;
-
-
                     CheckFavorites(UsersChartPlayList, FavoriteList);
                     Check(UsersChartPlayList, PlayingMusic);
                 });
@@ -1237,6 +1340,20 @@ namespace MediaCenter.ViewModel {
         #endregion
 
         #region app_voids
+
+        private void AuthorizationInMediaCenter() {
+            using (AuthWindow window = new AuthWindow()) {
+                window.Owner = Application.Current.MainWindow;
+                window.ShowDialog();
+                bool result = window.DialogResult.Value;
+                if (result == true)
+                    AuthorizedUser = window.user;
+            }
+        }
+        private void LogoutAction() {
+            MessageBox.Show($"{AuthorizedUser.Login}");
+            AuthorizedUser = null;
+        }
         private void DownloadSong(DataSource file) {
             file.Download = true;
             WebClient client = new WebClient();
@@ -1260,13 +1377,13 @@ namespace MediaCenter.ViewModel {
             download_file.Download = false;
         }
         public void SaveFavoriteList() {
-            var username = System.Environment.UserName;
             var file = JsonConvert.SerializeObject(FavoriteList, Formatting.Indented);
             System.IO.File.WriteAllText(Environment.CurrentDirectory + @"/favorite.data", file, System.Text.Encoding.UTF8);
-            UploadFiles($"ftp://77.222.40.224/public_html/playlist/database/{username}/", Environment.CurrentDirectory + @"/favorite.data");
+            UploadFiles($"ftp://77.222.40.224/public_html/playlist/database/{Username}/", Environment.CurrentDirectory + @"/favorite.data");
+            HTMLPage.Create(DisplayUserName, Environment.CurrentDirectory + @"/index.php");
+            UploadFiles($"ftp://77.222.40.224/public_html/playlist/database/{Username}/", Environment.CurrentDirectory + @"/index.php");
         }
         public void UploadFiles(string address, string file) {
-            var username = System.Environment.UserName;
             try {
                 using (WebClient webClient = new WebClient()) {
                     var path = address + Path.GetFileName(file);
@@ -1276,11 +1393,10 @@ namespace MediaCenter.ViewModel {
             } catch { }
         }
         private void LoadFavoriteList() {
-            var username = System.Environment.UserName;
             try {
                 using (WebClient client = new WebClient()) {
                     client.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
-                    var data = client.DownloadString(new Uri($"ftp://77.222.40.224/public_html/playlist/database/{username}/favorite.data"));
+                    var data = client.DownloadString(new Uri($"ftp://77.222.40.224/public_html/playlist/database/{Username}/favorite.data"));
                     FavoriteList = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
                 }
             } catch { }
@@ -1308,7 +1424,7 @@ namespace MediaCenter.ViewModel {
             }
             Content = new ItemsControl();
             Content.ItemsSource = MusicFiles;
-            //CurrentPlayList = MusicFiles;
+            State = "Плейлист";
             CenterState = CenterState.Playlist;
             ClearVisible = Visibility.Visible;
             OpenPathVisible = Visibility.Collapsed;
@@ -1430,7 +1546,7 @@ namespace MediaCenter.ViewModel {
         private void Check(ObservableCollection<DataSource> source, DataSource target) {
             foreach (var file in source) {
                 if (Player.State == NAudio.Wave.PlaybackState.Playing) {
-                    if (file.FilePath == target.FilePath) {
+                    if (file.Id == target.Id) {
                         file.IsPlay = true;
                         file.IsPaused = false;
                     } else {
@@ -1439,7 +1555,7 @@ namespace MediaCenter.ViewModel {
                     }
                 }
                 if (Player.State == NAudio.Wave.PlaybackState.Paused) {
-                    if (file.FilePath == target.FilePath) {
+                    if (file.Id == target.Id) {
                         file.IsPaused = true;
                         file.IsPlay = false;
                     }
@@ -1714,58 +1830,37 @@ namespace MediaCenter.ViewModel {
             System.IO.File.WriteAllText(AppContext.BaseDirectory + "radio.json", data);
         }
         private void UploadDatabase() {
-            var username = System.Environment.UserName;
-            var image = Avatar.GetUserTile(username);
-            image.Save("avatar.png");
             var file = Path.Combine(Environment.CurrentDirectory, "favorite.data");
             var avatar = Path.Combine(Environment.CurrentDirectory, "avatar.png");
-            UploadFiles($"ftp://77.222.40.224//Database/{username}/", file);
-            UploadFiles($"ftp://77.222.40.224/Database/{username}/", avatar);
+            UploadFiles($"ftp://77.222.40.224/public_html/playlist/database/{Username}/", file);
+            UploadFiles($"ftp://77.222.40.224/public_html/playlist/database/{Username}/", avatar);
         }
         private Task DownloadDatabase() {
             NetworkCredential credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
             // string url = "ftp://77.222.40.224/Database/";
 
-            Loader.DownloadFile(Path.Combine(Environment.CurrentDirectory, "Database"), "ftp://77.222.40.224/Database/", "kalkyneogm_admin", "Sneo2352816botS");
+            Loader.DownloadFile(Path.Combine(Environment.CurrentDirectory, "Database"), "ftp://77.222.40.224/public_html/playlist/database/", "kalkyneogm_admin", "Sneo2352816botS");
 
             return Task.CompletedTask;
         }
-        private Task GetUserCharts() {
+        private async Task GetUserCharts() {
             UsersChart.Clear();
             UsersChartPlayList.Clear();
-            //await ClearDatabase();
-            //await DownloadDatabase();
-            //Task.Factory.StartNew(() => {
-            var ext_avatar = ".png";
-            var ext_list = ".data";
-            DirectoryInfo dir = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, @"Database"));
-            FileInfo[] files = dir.GetFiles("*", SearchOption.AllDirectories);
-            var f = dir.GetDirectories();
-            try {
-                foreach (var file in f) {
-                    DirectoryInfo folder = file;
-                    FileInfo[] avatars = folder.GetFiles("*" + ext_avatar, SearchOption.AllDirectories);
-                    FileInfo[] fav_lists = folder.GetFiles("*" + ext_list, SearchOption.AllDirectories);
-                    var ava = "";
-                    var path = "";
-                    ObservableCollection<DataSource> temp = new ObservableCollection<DataSource>();
-                    foreach (var item in avatars) {
-                        ava = item.FullName;
-                    }
-                    foreach (var item in fav_lists) {
-                        path = item.FullName;
-                        var data = System.IO.File.ReadAllText(path);
-                        temp = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
-                    }
-                    //UsersFavorite.Add(new Collection(folder.Name, ava, temp));
-                    UsersChart.Add(new DataSource(folder.Name, ava, path, SourceType.Users));
-                }
 
-            } catch (Exception ex) {
-                MessageBox.Show(ex.Message);
+            var config = Configuration.Default.WithDefaultLoader();
+            var context = BrowsingContext.New(config);
+            var document = await context.OpenAsync("https://mymusiccenter.ru/playlist/users.php");
+
+            var userlist = document.QuerySelector("div[class='userlist']");
+            var users = userlist.QuerySelectorAll("a[class='user-link']");
+            foreach (var item in users) {
+                var url = "https://mymusiccenter.ru/playlist/";
+                var link = item.GetAttribute("href");
+                var title = item.QuerySelector("div[class='user']").InnerHtml;
+                var avatar = item.QuerySelector("div[class='item']").QuerySelector("img").GetAttribute("src");
+
+                UsersChart.Add(new DataSource(0, title, url + avatar, url + link, SourceType.Users));
             }
-            //  });
-            return Task.CompletedTask;
         }
 
         private Task ClearDatabase() {
@@ -1781,24 +1876,25 @@ namespace MediaCenter.ViewModel {
 
         private async void GetUsersChartPlaylist(string path) {
             UsersChartPlayList.Clear();
-            await DownloadDatabase();
-            await GetUserCharts();
-            var data = System.IO.File.ReadAllText(path);
-            UsersChartPlayList = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
-            foreach (var item in UsersChartPlayList) {
-                item.Liked = false;
-            }
+
+            var link = path.Replace("index.php", "") + "favorite.data";
+            try {
+                using (WebClient client = new WebClient()) {
+                    client.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+                    var data = client.DownloadString(new Uri(link));
+                    UsersChartPlayList = JsonConvert.DeserializeObject<ObservableCollection<DataSource>>(data);
+                }
+            } catch { }
+
+
             BackVisible = Visibility.Visible;
             ReturnVisible = Visibility.Collapsed;
-
         }
         public bool DirectoryExists(string directory) {
             bool directoryExists;
-
             var request = (FtpWebRequest)WebRequest.Create(directory);
             request.Method = WebRequestMethods.Ftp.ListDirectory;
             request.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
-
             try {
                 using (request.GetResponse()) {
                     directoryExists = true;
@@ -1806,27 +1902,68 @@ namespace MediaCenter.ViewModel {
             } catch (WebException) {
                 directoryExists = false;
             }
-
             return directoryExists;
         }
         private void CreateFtpPath() {
-            var username = Environment.UserName;
-            if (DirectoryExists($"ftp://77.222.40.224/public_html/playlist/database/{username}/")) {
+            //var username = Environment.UserName;
+            if (DirectoryExists($"ftp://77.222.40.224/public_html/playlist/database/{Username}/")) {
 
             } else {
-                FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create($"ftp://77.222.40.224/public_html/playlist/database/{username}/");
-                request.Method = WebRequestMethods.Ftp.MakeDirectory;
-                request.UseBinary = true;
-                request.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
-                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-                response.Close();
+                //FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create(Uri.EscapeDataString($"ftp://77.222.40.224/public_html/playlist/database/{Username}/"));
+                //request.Method = WebRequestMethods.Ftp.MakeDirectory;
+                ////request.EnableSsl = true;
+                //request.UseBinary = true;
+                //request.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+                //FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+                //response.Close();
+                FtpClientCreateDirectory(Username);
             }
+            HTMLPage.Create(DisplayUserName, Environment.CurrentDirectory + @"/index.php");
+            UploadFiles($"ftp://77.222.40.224/public_html/playlist/database/{Username}/", Environment.CurrentDirectory + @"/index.php");
+        }
+
+        public void FtpClientUploadFile(string file, string url, string address) {
+            FtpClient ftp = new FtpClient();
+            ftp.Host = "77.222.40.224";
+            ftp.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+            ftp.Encoding = Encoding.GetEncoding(65001);
+            //using (var remote = ftp.OpenWrite(file, FtpDataType.Binary)) {
+            FileStream uploadedFile = new FileStream(file, FileMode.Open, FileAccess.Read);
+            string shortName = Path.GetFileName(file);
+            var ftpRequest = (FtpWebRequest)WebRequest.Create(address + shortName);
+            ftpRequest.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+            ftpRequest.EnableSsl = false;
+            ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
+            //Буфер для загружаемых данных
+            byte[] file_to_bytes = new byte[uploadedFile.Length];
+            //Считываем данные в буфер
+            uploadedFile.Read(file_to_bytes, 0, file_to_bytes.Length);
+
+            uploadedFile.Close();
+
+            //Поток для загрузки файла 
+            Stream writer = ftpRequest.GetRequestStream();
+
+            writer.Write(file_to_bytes, 0, file_to_bytes.Length);
+            writer.Close();
+            //  }
+        }
+
+        public Task FtpClientCreateDirectory(string filePath) {
+            FtpClient ftp = new FtpClient();
+            ftp.Host = "77.222.40.224";
+            ftp.Credentials = new NetworkCredential("kalkyneogm_admin", "Sneo2352816botS");
+            ftp.Encoding = Encoding.GetEncoding(65001);
+            ftp.CreateDirectory(Uri.UnescapeDataString($"public_html/playlist/database/{filePath}"), true);
+            Thread.Sleep(1000);
+            UploadDatabase();
+            return Task.CompletedTask;
         }
         #endregion
 
         public MainViewModel() {
-            //YandexApi.Init();
             CreateFtpPath();
+
             Player = new Player((long)Properties.Settings.Default.volume);
             CurrentPlayList = new ObservableCollection<DataSource>();
             MusicFiles = new ObservableCollection<DataSource>();
@@ -1849,7 +1986,6 @@ namespace MediaCenter.ViewModel {
             } else {
                 GetRadioList();
             }
-            DownloadDatabase();
             //
             Opacity = 1.0;
             CurrentPlayList = MusicFiles;
@@ -1863,41 +1999,37 @@ namespace MediaCenter.ViewModel {
             BackVisible = Visibility.Collapsed;
             ReturnVisible = Visibility.Collapsed;
             LVOrientation = System.Windows.Controls.Orientation.Vertical;
-            //Volume = (long)(Properties.Settings.Default.volume);
-            //
-            if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
-                Version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
             //
             Timer = new DispatcherTimer(DispatcherPriority.Background);
             Timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             Timer.Tick += delegate {
-                if (Player.State == NAudio.Wave.PlaybackState.Playing)
-                    Time = Player.getPositionString();
-                //Value = Player.getPosition();
-                PageTitle = $"{Player.State}";
-                if (Player.State == NAudio.Wave.PlaybackState.Stopped & IsPlay) {
-                    if (CurrentPlayList.Count > 0) {
-                        if (HistoryIndex == CurrentPlayList.Count - 1)
-                            HistoryIndex = 0;
-                        else
-                            HistoryIndex++;
-                        var file = CurrentPlayList[HistoryIndex];
-                        Play(file, CurrentPlayList);
-
+                try {
+                    if (Player.State == NAudio.Wave.PlaybackState.Playing)
+                        Time = Player.getPositionString();
+                    PageTitle = $"{Player.State}";
+                    if (Player.State == NAudio.Wave.PlaybackState.Stopped & IsPlay) {
+                        if (CurrentPlayList.Count > 0) {
+                            if (HistoryIndex == CurrentPlayList.Count - 1)
+                                HistoryIndex = 0;
+                            else
+                                HistoryIndex++;
+                            var file = CurrentPlayList[HistoryIndex];
+                            Play(file, CurrentPlayList);
+                        }
                     }
-                }
-                if (HistoryIndex != 0 & CurrentPlayList.Count != 0) {
-                    var prev = HistoryIndex - 1;
-                    PrevMusic = CurrentPlayList[prev];
-                } else {
-                    PrevMusic = null;
-                }
-                if (HistoryIndex != CurrentPlayList.Count - 1) {
-                    var next = HistoryIndex + 1;
-                    NextMusic = CurrentPlayList[next];
-                } else {
-                    NextMusic = null;
-                }
+                    if (HistoryIndex != 0 & CurrentPlayList.Count != 0) {
+                        var prev = HistoryIndex - 1;
+                        PrevMusic = CurrentPlayList[prev];
+                    } else {
+                        PrevMusic = null;
+                    }
+                    if (HistoryIndex != CurrentPlayList.Count - 1) {
+                        var next = HistoryIndex + 1;
+                        NextMusic = CurrentPlayList[next];
+                    } else {
+                        NextMusic = null;
+                    }
+                } catch { }
             };
         }
     }

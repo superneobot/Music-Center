@@ -72,9 +72,14 @@ namespace MediaCenter {
         #endregion
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
-            this.Left = desktopWorkingArea.Right - this.Width - 50;
-            this.Top = desktopWorkingArea.Top + 50;
+            if (Properties.Settings.Default.CompactL == 0.0) {
+                var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+                this.Left = desktopWorkingArea.Right - this.Width - 50;
+                this.Top = desktopWorkingArea.Top + 50;
+            } else {
+                this.Left = Properties.Settings.Default.CompactL;
+                this.Top = Properties.Settings.Default.CompactT;
+            }
 
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);
 
@@ -89,8 +94,10 @@ namespace MediaCenter {
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
-            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left) {
                 this.DragMove();
+
+            }
         }
 
         private void Border_MouseEnter(object sender, MouseEventArgs e) {
@@ -135,12 +142,21 @@ namespace MediaCenter {
 
 
         private void back_Click(object sender, RoutedEventArgs e) {
+
+            Properties.Settings.Default.CompactL = this.Left;
+            Properties.Settings.Default.CompactT = this.Top;
+            Properties.Settings.Default.Save();
+
             this.Close();
             var window = Application.Current.MainWindow;
             window.Show();
         }
 
         private void close_Click(object sender, RoutedEventArgs e) {
+            Properties.Settings.Default.CompactL = this.Left;
+            Properties.Settings.Default.CompactT = this.Top;
+            Properties.Settings.Default.Save();
+
             Process.GetCurrentProcess().Kill();
         }
     }

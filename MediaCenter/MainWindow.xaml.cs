@@ -6,6 +6,9 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Button = System.Windows.Controls.Button;
+using ListViewItem = System.Windows.Controls.ListViewItem;
+using MenuItem = System.Windows.Controls.MenuItem;
 
 namespace MediaCenter {
     /// <summary>
@@ -19,6 +22,7 @@ namespace MediaCenter {
         bool glass = SystemParameters.IsGlassEnabled;
         bool volume_panel_visible = false;
 
+        MediaCenter.Model.ApplicaionContext db;
         public MainWindow() {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
@@ -26,6 +30,8 @@ namespace MediaCenter {
             timer.Interval = new TimeSpan(0, 0, 1);
             timer.Tick += Timer_Tick;
             timer.Start();
+
+            db = new Model.ApplicaionContext();
         }
         private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
             IntPtr windowhandle = new WindowInteropHelper(this).Handle;
@@ -45,7 +51,7 @@ namespace MediaCenter {
         }
 
         private void ShowContextMenu() {
-            var contextMenu = Resources["app_menu"] as ContextMenu;
+            var contextMenu = Resources["app_menu"] as System.Windows.Controls.ContextMenu;
             contextMenu.IsOpen = true;
         }
 

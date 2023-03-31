@@ -130,7 +130,7 @@
                                     </CheckBox.Triggers>
                                 </CheckBox>
 
-                                <TextBlock x:Name="logo" Text="Music Center" Style="{StaticResource Logo}" FontSize="24">
+                                <TextBlock x:Name="logo" Text=" Music Center" Style="{StaticResource Logo}" FontSize="24">
                                     <TextBlock.Effect>
                                         <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" Color="Black"/>
                                     </TextBlock.Effect>
@@ -176,14 +176,21 @@
                             <Button Command="{Binding OpenFavoriteList}" Width="190" Grid.Row="4" Style="{StaticResource MenuButton}" Content="Мне нравится"  ToolTip="Открыть список понравившихся"/>
                             <Button Command="{Binding OpenCollections}" Width="190" Grid.Row="5" Style="{StaticResource MenuButton}" Content="Топ чарты" ToolTip="Открыть топ чарты и подборки"/>
                             <Button Command="{Binding OpenWave}" Width="190" Grid.Row="6" Style="{StaticResource MenuButton}" Content="Свои чарты" ToolTip="Слушать подборки пользователей" />
-                            <Button Command="{Binding OpenRadioPage}" Width="190" Grid.Row="7" Style="{StaticResource MenuButton}" Content="Online Радио" ToolTip="Открыть радиостанции"/>
-                            
+                            <Button Command="{Binding OpenRadioPage}" Width="190" Grid.Row="7" Style="{StaticResource MenuButton}" Content="Online Радио" ToolTip="Открыть радиостанции"/>  
                             <StackPanel Grid.Row="9" x:Name="version_panel" Background="Transparent" Orientation="Vertical" Width="200" Height="48">
                                 <TextBlock Style="{StaticResource Time}" Text="Версия приложения" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 <TextBlock Style="{StaticResource Time}" Text="{Binding Version}" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </StackPanel>
-                            
-                            <Button Command="{Binding OpenSettingsPage}" Width="190" Grid.Row="10" Style="{StaticResource MenuButton}" Content="Настройки"  ToolTip="Показать настройки приложения" Visibility="Visible"/>
+                            <Grid Grid.Row="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Image Grid.Column="0" x:Name="avatar" Width="40" Height="40" Source="{Binding UserAvatar}" ToolTip="{Binding AuthorizedUser.Login}" />
+                                <Button Grid.Column="1" Command="{Binding LogIn}" Style="{StaticResource MenuButton}" x:Name="login_btn">
+                                    <TextBlock x:Name="username" Text="{Binding DisplayUserName}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                </Button>
+                            </Grid>
                             
                         </Grid>
                     </DockPanel>
@@ -195,14 +202,25 @@
                             <RowDefinition Height="1*" />
                         </Grid.RowDefinitions>
                         <DockPanel Grid.Row="0">
-                            <TextBox x:Name="search_box" 
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="44" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="search_box" 
+                                         Grid.Column="0"
                      Style="{StaticResource SearchBox}"
                      ToolTip="Поиск треков в сети">
-                                <TextBox.InputBindings>
-                                    <KeyBinding Key="Enter" Command="{Binding Search}" CommandParameter="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
-                                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ClearBox}" />
-                                </TextBox.InputBindings>
-                            </TextBox>
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Enter" Command="{Binding Search}" CommandParameter="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+                                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ClearBox}" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                                <Button Grid.Column="1" Command="{Binding OpenSettingsPage}" Style="{StaticResource MenuButton}" ToolTip="Открыть настройки" >
+                                    <Image Width="32" Source="{StaticResource settings_img}" />
+                                </Button>
+                            </Grid>
+                            
                         </DockPanel>
                         <Border Grid.Row="1" Padding="4" Background="Transparent" Width="1200">
                             <Grid SnapsToDevicePixels="True" ShowGridLines="False">
@@ -454,7 +472,7 @@
                                 <ColumnDefinition Width="120"/>
                             </Grid.ColumnDefinitions>
                             <CheckBox x:Name="poster_check" Style="{StaticResource song_panel_poster_check}" Width="40" Height="40" Click="CheckBox_Click">
-                                <Border Background="Transparent" BorderBrush="#222" BorderThickness="1">
+                                <Border Background="Transparent" BorderBrush="#222" BorderThickness="0">
                                     <Image Grid.Column="0" x:Name="song_panel_poster_image" Style="{StaticResource poster}" Width="40" Height="40" VerticalAlignment="Center">
                                         <!--<Image.Effect>
                                         <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" />

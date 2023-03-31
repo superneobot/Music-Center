@@ -1,6 +1,7 @@
 ﻿using MediaCenter.ViewModel;
 using Newtonsoft.Json;
 using System;
+
 public enum SourceType {
     Music,
     Collection,
@@ -10,6 +11,7 @@ public enum SourceType {
 }
 namespace MediaCenter.Model {
     [Serializable]
+    [JsonObject("MusicFile")]
     public class DataSource : ViewModelBase {
         [JsonProperty("ID")]
         private string _id;
@@ -213,8 +215,9 @@ namespace MediaCenter.Model {
         /// <param name="title">Название</param>
         /// <param name="poster">Постер</param>
         /// <param name="url">Адрес</param>
-        /// <param name="type">Тип</param>
+        /// <param name="type">Тип</param>           
         public DataSource(string title, string poster, string url, SourceType type) {
+            Id = Guid.NewGuid().ToString();
             Artist = type.ToString();
             Title = title;
             Poster = poster;
@@ -232,6 +235,21 @@ namespace MediaCenter.Model {
             Poster = poster;
             FilePath = url;
             Type = SourceType.Collection;
+        }
+        /// <summary>
+        /// Добавление пользовательской коллекции
+        /// </summary>
+        /// <param name="id">Ид</param>
+        /// <param name="title">Имя пользователя</param>
+        /// <param name="avatar">Аватар</param>
+        /// <param name="link">Ссылка</param>
+        /// <param name="type">Тип</param>
+        public DataSource(int id, string title, string avatar, string link, SourceType type) {
+            Id = Guid.NewGuid().ToString();
+            Title = title;
+            Poster = avatar;
+            FilePath = link;
+            Type = type;
         }
         public DataSource() { }
         /// <summary>
@@ -271,6 +289,7 @@ namespace MediaCenter.Model {
             LocalFile = true;
             Location = Location.Local;
             Type = SourceType.Music;
+            Id = Guid.NewGuid().ToString();
         }
         /// <summary>
         /// Чтение из тега заголовка
@@ -339,7 +358,7 @@ namespace MediaCenter.Model {
         public override bool Equals(object obj) {
             var item = obj as DataSource;
             if (item == null) return false;
-            if (item.FilePath == this.FilePath)
+            if (item.Id == this.Id)
                 return true;
             return base.Equals(obj);
         }

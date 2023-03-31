@@ -8,14 +8,14 @@
         xmlns:local="clr-namespace:MediaCenter.Views"
         Background="#333"  
         mc:Ignorable="d"   WindowStyle="None"
-        Title="Настройки" Height="365" Width="400" WindowStartupLocation="CenterScreen" Icon="{StaticResource logo}" ResizeMode="NoResize" Loaded="Window_Loaded" Topmost="True" IsManipulationEnabled="True" ShowInTaskbar="False">
-    <Border Background="Transparent" MouseDown="DockPanel_MouseDown" BorderThickness="2" BorderBrush="#111">
+        Title="Настройки" Height="365" Width="400" WindowStartupLocation="CenterOwner" Icon="{StaticResource logo}" ResizeMode="NoResize" Loaded="Window_Loaded" Topmost="True" IsManipulationEnabled="True" ShowInTaskbar="False">
+    <Border Background="Transparent" MouseDown="DockPanel_MouseDown" BorderThickness="1" BorderBrush="#333">
         <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" Background="#111">
+            <StackPanel Orientation="Horizontal" Background="#222">
                 <Button x:Name="close" Style="{StaticResource SystemButtons}" Content="X" Click="close_btn_Click" HorizontalAlignment="Right" ToolTip="Закрыть настройки" Visibility="Collapsed"/>
                 <Image Source="{StaticResource logo}" Width="24" Margin="3,0,0,0"/>
                 <TextBlock Grid.Row="0" Text="Настройки приложения" Style="{StaticResource Logo}" HorizontalAlignment="Left"  Margin="5,0,0,0"/>                        

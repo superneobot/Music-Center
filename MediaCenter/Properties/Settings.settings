@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="volume" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">100</Value>
     </Setting>
     <Setting Name="savepath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -12,13 +12,13 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="windowstyle" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#00000000</Value>
+      <Value Profile="(Default)">#222222</Value>
     </Setting>
     <Setting Name="windowcolor" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#00000000</Value>
+      <Value Profile="(Default)">#222222</Value>
     </Setting>
     <Setting Name="strength" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">0.8</Value>
     </Setting>
     <Setting Name="transparent" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -31,6 +31,12 @@
     </Setting>
     <Setting Name="Normal" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">255</Value>
+    </Setting>
+    <Setting Name="CompactL" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="CompactT" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

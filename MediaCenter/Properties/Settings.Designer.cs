@@ -25,7 +25,7 @@ namespace MediaCenter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
         public double volume {
             get {
                 return ((double)(this["volume"]));
@@ -61,7 +61,7 @@ namespace MediaCenter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#00000000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#222222")]
         public string windowstyle {
             get {
                 return ((string)(this["windowstyle"]));
@@ -73,7 +73,7 @@ namespace MediaCenter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#00000000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#222222")]
         public string windowcolor {
             get {
                 return ((string)(this["windowcolor"]));
@@ -85,7 +85,7 @@ namespace MediaCenter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.8")]
         public double strength {
             get {
                 return ((double)(this["strength"]));
@@ -140,6 +140,30 @@ namespace MediaCenter.Properties {
             }
             set {
                 this["Normal"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double CompactL {
+            get {
+                return ((double)(this["CompactL"]));
+            }
+            set {
+                this["CompactL"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double CompactT {
+            get {
+                return ((double)(this["CompactT"]));
+            }
+            set {
+                this["CompactT"] = value;
             }
         }
     }
